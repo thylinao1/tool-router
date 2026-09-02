@@ -44,8 +44,8 @@ remaining lines; the evaluator scores whatever the file contains.
 
 ## How `multi` is scored
 
-The labelled file (`labelled.jsonl`) uses `multi` without an ordered
-`steps` list, so the evaluator applies two rules for this format:
+If a labelled file uses `multi` without an ordered `steps` list, the
+evaluator applies two rules:
 
 * An item whose `expected` is `multi` counts as strictly correct only if the
   router split the message into two or more steps. It counts as leniently
@@ -54,7 +54,15 @@ The labelled file (`labelled.jsonl`) uses `multi` without an ordered
 * An item whose `acceptable` list contains `multi` counts as leniently
   correct if the router split the message, in addition to the usual rule.
 
-Both rules use only what the labeller wrote; no label was changed.
+Both rules use only what the labeller wrote. Adding `"steps": [...]` to a
+`multi` item gives exact sequence scoring instead.
+
+## Recommended procedure for a golden set
+
+Use three or more labellers who did not write the routers. Each labels the
+file independently, then disagreements are discussed and one adjudicated
+label is kept per item. Record the agreement rate before adjudication. Score
+every router once against the adjudicated file and do not tune afterwards.
 
 ## Scoring
 
