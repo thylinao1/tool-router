@@ -38,21 +38,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.389
+        "latency_ms": 0.201
       },
       "answer": "12 **2 + 7 = 151",
-      "tool_ms": 3.464,
+      "tool_ms": 4.397,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
   "answer": "12 **2 + 7 = 151",
   "latency_ms": {
-    "routing": 0.389,
-    "tool": 3.464,
+    "routing": 0.201,
+    "tool": 4.397,
     "llm": 0.0,
-    "total": 4.001
+    "total": 4.747
   },
   "fallback": false,
   "llm": "ollama"
@@ -95,21 +96,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.126
+        "latency_ms": 0.125
       },
       "answer": "Weather in Cape Town: 23°C, sunny, humidity 78% (mock data)",
-      "tool_ms": 0.125,
+      "tool_ms": 0.117,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
   "answer": "Weather in Cape Town: 23°C, sunny, humidity 78% (mock data)",
   "latency_ms": {
-    "routing": 0.126,
-    "tool": 0.125,
+    "routing": 0.125,
+    "tool": 0.117,
     "llm": 0.0,
-    "total": 0.309
+    "total": 0.3
   },
   "fallback": false,
   "llm": "ollama"
@@ -152,21 +154,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 22.47
+        "latency_ms": 19.379
       },
-      "answer": "Top result for 'Latest headlines about the Singapore general election' (mock search): no canned snippet; a real engine would return live pages here.",
-      "tool_ms": 0.552,
+      "answer": "No canned snippet; a real engine would return live pages here (mock search for 'Latest headlines about the Singapore general election').",
+      "tool_ms": 0.533,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
-  "answer": "Top result for 'Latest headlines about the Singapore general election' (mock search): no canned snippet; a real engine would return live pages here.",
+  "answer": "No canned snippet; a real engine would return live pages here (mock search for 'Latest headlines about the Singapore general election').",
   "latency_ms": {
-    "routing": 22.47,
-    "tool": 0.552,
+    "routing": 19.379,
+    "tool": 0.533,
     "llm": 0.0,
-    "total": 23.075
+    "total": 19.965
   },
   "fallback": false,
   "llm": "ollama"
@@ -212,21 +215,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
           "weather"
         ],
         "abstained": false,
-        "latency_ms": 13.508
+        "latency_ms": 12.552
       },
-      "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, to learn the relationship between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the model must identify patterns or structure on its own. Supervised learning aims to minimize the error between predicted and actual outputs, while unsupervised learning aims to discover hidden patterns or relationships in the data. This fundamental difference in approach enables supervised learning to make precise predictions and unsupervised learning to uncover underlying structures.",
+      "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, and the goal is to learn a mapping between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the goal is to identify patterns or structure in the data without a predefined output. Supervised learning typically results in more accurate models, but requires more labeled data, while unsupervised learning can discover new insights and relationships. Unsupervised learning often requires more creativity and domain expertise to design effective algorithms.",
       "tool_ms": 0.0,
-      "llm_ms": 3043.015,
+      "llm_ms": 3078.315,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
-  "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, to learn the relationship between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the model must identify patterns or structure on its own. Supervised learning aims to minimize the error between predicted and actual outputs, while unsupervised learning aims to discover hidden patterns or relationships in the data. This fundamental difference in approach enables supervised learning to make precise predictions and unsupervised learning to uncover underlying structures.",
+  "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, and the goal is to learn a mapping between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the goal is to identify patterns or structure in the data without a predefined output. Supervised learning typically results in more accurate models, but requires more labeled data, while unsupervised learning can discover new insights and relationships. Unsupervised learning often requires more creativity and domain expertise to design effective algorithms.",
   "latency_ms": {
-    "routing": 13.508,
+    "routing": 12.552,
     "tool": 0.0,
-    "llm": 3043.015,
-    "total": 3056.654
+    "llm": 3078.315,
+    "total": 3090.939
   },
   "fallback": false,
   "llm": "ollama"
@@ -269,21 +273,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": true,
-        "latency_ms": 23.092
+        "latency_ms": 19.873
       },
-      "answer": "Octopuses have three hearts, which pump blue-green blood through their bodies. Two of the hearts are branchial hearts that pump blood to their gills, while the third is a systemic heart that pumps blood to the rest of their body. This unique circulatory system allows them to efficiently oxygenate their bodies while also conserving energy. This adaptation is crucial for their ability to change color and texture to blend in with their surroundings.",
+      "answer": "Octopuses have three hearts, two of which pump blood to their gills, while the third pumps blood to the rest of their body. This unique circulatory system allows them to efficiently pump blood to their entire body, including their arms, which require a constant supply of oxygen. Additionally, octopuses can also change the color and texture of their skin to blend in with their surroundings, making them expert camouflage artists.",
       "tool_ms": 0.0,
-      "llm_ms": 2479.31,
+      "llm_ms": 2444.121,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
-  "answer": "Octopuses have three hearts, which pump blue-green blood through their bodies. Two of the hearts are branchial hearts that pump blood to their gills, while the third is a systemic heart that pumps blood to the rest of their body. This unique circulatory system allows them to efficiently oxygenate their bodies while also conserving energy. This adaptation is crucial for their ability to change color and texture to blend in with their surroundings.",
+  "answer": "Octopuses have three hearts, two of which pump blood to their gills, while the third pumps blood to the rest of their body. This unique circulatory system allows them to efficiently pump blood to their entire body, including their arms, which require a constant supply of oxygen. Additionally, octopuses can also change the color and texture of their skin to blend in with their surroundings, making them expert camouflage artists.",
   "latency_ms": {
-    "routing": 23.092,
+    "routing": 19.873,
     "tool": 0.0,
-    "llm": 2479.31,
-    "total": 2502.467
+    "llm": 2444.121,
+    "total": 2464.406
   },
   "fallback": false,
   "llm": "ollama"

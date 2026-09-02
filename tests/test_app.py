@@ -11,7 +11,7 @@ def test_tool_error_falls_back_to_llm(rules, registry):
     # the rules route "calculate ... sum of" to the calculator; the tool finds no digits and returns an error
     out = Assistant(rules, registry, MockLLM()).handle("Calculate the sum of all primes below ten")
     assert out["routes"] == ["calculator"]
-    assert out["fallback"] and "mock LLM" in out["answer"]
+    assert out["fallback"] and out["answer"].startswith("(calculator could not handle this")
 
 
 def test_weather_without_location_asks(hybrid, registry):
@@ -20,10 +20,17 @@ def test_weather_without_location_asks(hybrid, registry):
     assert "location" in out["answer"].lower()
 
 
-def test_router_clarification_is_recorded(hybrid, registry):
-    out = Assistant(hybrid, registry, MockLLM()).handle("How much is it?")
+def test_router_clarification_is_recorded(rules, registry):
+    from router import HybridRouter, RoutingDecision
+
+    class Stub:
+        name = "stub"
+        def route(self, q):
+            return RoutingDecision(route="calculator", confidence=0.55, router="stub", reason="stub",
+                                   candidates=[("calculator", 0.3), ("web_search", 0.26)])
+    out = Assistant(HybridRouter(rules, Stub()), registry, MockLLM()).handle("How much is it?")
     assert out["routes"] == ["clarify"] and out["steps"][0]["asked_by"] == "router"
-    assert "a calculation" in out["answer"]
+    assert "a calculation" in out["answer"] and "a web search" in out["answer"]
 
 
 def test_overlong_query_is_refused_quickly(hybrid, registry):

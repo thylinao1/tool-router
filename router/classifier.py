@@ -20,7 +20,7 @@ import numpy as np
 
 from .schema import RoutingDecision
 from .tools import ToolRegistry
-from .embeddings import DEFAULT_MODEL
+from .embeddings import DEFAULT_MODEL, load_encoder
 
 DEFAULT_TRAIN = Path(__file__).resolve().parents[1] / "eval" / "train.jsonl"
 
@@ -41,8 +41,7 @@ class ClassifierRouter:
         from sklearn.linear_model import LogisticRegression
 
         if encoder is None:
-            from sentence_transformers import SentenceTransformer
-            encoder = SentenceTransformer(model_name, device="cpu")
+            encoder = load_encoder(model_name)
         self.registry = registry
         self.encoder = encoder
         self.min_confidence = min_confidence
@@ -67,7 +66,7 @@ class ClassifierRouter:
         probs = self.clf.predict_proba(x)[0]
         ranked = sorted(zip(self.clf.classes_, probs), key=lambda kv: kv[1], reverse=True)
         top_route, top = ranked[0]
-        abstained = top < self.min_confidence
+        abstained = bool(top < self.min_confidence)
         reason = f"logistic regression over the sentence embedding ({self.n_train} training queries): p({top_route}) = {top:.2f}"
         if len(ranked) > 1:
             reason += f", p({ranked[1][0]}) = {ranked[1][1]:.2f}"

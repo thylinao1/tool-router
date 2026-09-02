@@ -1,22 +1,22 @@
-{"id": 1, "query": "What's 81 divided by 9 plus 4?", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 0.292, "tool_ms": 3.294, "llm_ms": 0.0, "total_ms": 3.733}
-{"id": 2, "query": "Umbrella needed in Manila tomorrow?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 0.1, "tool_ms": 0.126, "llm_ms": 0.0, "total_ms": 0.275}
-{"id": 3, "query": "Who is leading the Premier League right now?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 20.232, "tool_ms": 0.555, "llm_ms": 0.0, "total_ms": 20.833}
-{"id": 4, "query": "Describe how a transformer model works", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 17.166, "tool_ms": 0.0, "llm_ms": 2987.395, "total_ms": 3004.673}
-{"id": 5, "query": "Compute 7 times 8 minus 6", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 22.834, "tool_ms": 0.149, "llm_ms": 0.0, "total_ms": 23.046}
-{"id": 6, "query": "How cold will Helsinki be tonight?", "routes": ["weather"], "fallback": false, "asked_by": ["tool"], "routing_ms": 11.821, "tool_ms": 0.357, "llm_ms": 0.0, "total_ms": 12.217}
-{"id": 7, "query": "Recent news about the Mars rover", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 8.91, "tool_ms": 0.018, "llm_ms": 0.0, "total_ms": 8.956}
-{"id": 8, "query": "Write a short story about a lighthouse keeper", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.055, "tool_ms": 0.0, "llm_ms": 2878.124, "total_ms": 2878.281}
-{"id": 9, "query": "What is 2 to the power of 16?", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 0.226, "tool_ms": 0.34, "llm_ms": 0.0, "total_ms": 0.673}
-{"id": 10, "query": "Humidity in Jakarta at the moment", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 0.168, "tool_ms": 0.083, "llm_ms": 0.0, "total_ms": 0.325}
-{"id": 11, "query": "What's the current gold price per ounce?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 0.212, "tool_ms": 0.054, "llm_ms": 0.0, "total_ms": 0.331}
-{"id": 12, "query": "Who painted the Mona Lisa?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 21.876, "tool_ms": 0.0, "llm_ms": 1971.621, "total_ms": 1993.607}
-{"id": 13, "query": "Will it be foggy at Heathrow tomorrow morning?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 27.177, "tool_ms": 0.041, "llm_ms": 0.0, "total_ms": 27.28}
-{"id": 14, "query": "How many centimeters are in 3 meters?", "routes": ["calculator"], "fallback": true, "asked_by": [null], "routing_ms": 11.104, "tool_ms": 0.063, "llm_ms": 999.43, "total_ms": 1010.703}
-{"id": 15, "query": "What's the freezing point of ethanol?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 21.293, "tool_ms": 0.0, "llm_ms": 1433.817, "total_ms": 1455.229}
-{"id": 16, "query": "Explain why the calculator app rounds numbers", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 22.388, "tool_ms": 0.0, "llm_ms": 1989.389, "total_ms": 2012.069}
-{"id": 17, "query": "Which movies are showing in Singapore cinemas this weekend?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 21.783, "tool_ms": 0.064, "llm_ms": 0.0, "total_ms": 21.907}
-{"id": 18, "query": "And?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 6.52, "tool_ms": 0.0, "llm_ms": 825.209, "total_ms": 831.822}
-{"id": 19, "query": "Weather please", "routes": ["weather"], "fallback": false, "asked_by": ["tool"], "routing_ms": 0.135, "tool_ms": 0.163, "llm_ms": 0.0, "total_ms": 0.376}
-{"id": 20, "query": "Is it sunny in Lisbon and what's 9 * 9?", "routes": ["weather", "calculator"], "fallback": false, "asked_by": [null, null], "routing_ms": 0.247, "tool_ms": 0.971, "llm_ms": 0.0, "total_ms": 1.42}
-{"id": 21, "query": "Proofread this sentence: their going to the park", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.197, "tool_ms": 0.0, "llm_ms": 484.807, "total_ms": 485.115}
-{"id": 22, "query": "How's it looking?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 19.936, "tool_ms": 0.0, "llm_ms": 1861.208, "total_ms": 1881.317}
+{"id": 1, "query": "What's 81 divided by 9 plus 4?", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 0.273, "tool_ms": 4.394, "llm_ms": 0.0, "total_ms": 4.803}
+{"id": 2, "query": "Umbrella needed in Manila tomorrow?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 0.089, "tool_ms": 0.064, "llm_ms": 0.0, "total_ms": 0.208}
+{"id": 3, "query": "Who is leading the Premier League right now?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 20.371, "tool_ms": 0.503, "llm_ms": 0.0, "total_ms": 20.921}
+{"id": 4, "query": "Describe how a transformer model works", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 12.405, "tool_ms": 0.0, "llm_ms": 2946.524, "total_ms": 2959.122}
+{"id": 5, "query": "Compute 7 times 8 minus 6", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 24.454, "tool_ms": 0.213, "llm_ms": 0.0, "total_ms": 24.747}
+{"id": 6, "query": "How cold will Helsinki be tonight?", "routes": ["weather"], "fallback": false, "asked_by": ["tool"], "routing_ms": 12.91, "tool_ms": 0.366, "llm_ms": 0.0, "total_ms": 13.312}
+{"id": 7, "query": "Recent news about the Mars rover", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 10.815, "tool_ms": 0.023, "llm_ms": 0.0, "total_ms": 10.869}
+{"id": 8, "query": "Write a short story about a lighthouse keeper", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.058, "tool_ms": 0.0, "llm_ms": 3226.625, "total_ms": 3226.814}
+{"id": 9, "query": "What is 2 to the power of 16?", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 0.25, "tool_ms": 0.74, "llm_ms": 0.0, "total_ms": 1.103}
+{"id": 10, "query": "Humidity in Jakarta at the moment", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 0.176, "tool_ms": 0.172, "llm_ms": 0.0, "total_ms": 0.404}
+{"id": 11, "query": "What's the current gold price per ounce?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 0.101, "tool_ms": 0.071, "llm_ms": 0.0, "total_ms": 0.208}
+{"id": 12, "query": "Who painted the Mona Lisa?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 25.584, "tool_ms": 0.0, "llm_ms": 1962.211, "total_ms": 1987.921}
+{"id": 13, "query": "Will it be foggy at Heathrow tomorrow morning?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 26.572, "tool_ms": 0.034, "llm_ms": 0.0, "total_ms": 26.695}
+{"id": 14, "query": "How many centimeters are in 3 meters?", "routes": ["calculator"], "fallback": true, "asked_by": [null], "routing_ms": 13.874, "tool_ms": 0.129, "llm_ms": 998.589, "total_ms": 1012.677}
+{"id": 15, "query": "What's the freezing point of ethanol?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 20.232, "tool_ms": 0.0, "llm_ms": 1705.021, "total_ms": 1725.613}
+{"id": 16, "query": "Explain why the calculator app rounds numbers", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 25.565, "tool_ms": 0.0, "llm_ms": 2157.222, "total_ms": 2182.965}
+{"id": 17, "query": "Which movies are showing in Singapore cinemas this weekend?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 24.203, "tool_ms": 0.147, "llm_ms": 0.0, "total_ms": 24.424}
+{"id": 18, "query": "And?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 12.157, "tool_ms": 0.0, "llm_ms": 828.006, "total_ms": 840.22}
+{"id": 19, "query": "Weather please", "routes": ["weather"], "fallback": false, "asked_by": ["tool"], "routing_ms": 0.062, "tool_ms": 0.071, "llm_ms": 0.0, "total_ms": 0.168}
+{"id": 20, "query": "Is it sunny in Lisbon and what's 9 * 9?", "routes": ["weather", "calculator"], "fallback": false, "asked_by": [null, null], "routing_ms": 0.176, "tool_ms": 0.407, "llm_ms": 0.0, "total_ms": 0.684}
+{"id": 21, "query": "Proofread this sentence: their going to the park", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.072, "tool_ms": 0.0, "llm_ms": 485.39, "total_ms": 485.518}
+{"id": 22, "query": "How's it looking?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 23.223, "tool_ms": 0.0, "llm_ms": 1559.078, "total_ms": 1582.373}

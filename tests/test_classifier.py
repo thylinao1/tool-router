@@ -26,9 +26,9 @@ def test_classifier_confidence_is_a_probability(classifier):
     assert abs(sum(p for _, p in d.candidates) - 1) < 1e-6
 
 
-def test_classifier_abstains_below_threshold(classifier):
+def test_classifier_abstains_on_nonsense(classifier):
     d = classifier.route("zxqv blorp fnord")
-    assert d.abstained == (d.confidence < classifier.min_confidence)
+    assert d.abstained and d.confidence < classifier.min_confidence
 
 
 def test_hybrid_accepts_classifier_as_second_opinion(rules, classifier):

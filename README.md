@@ -51,8 +51,9 @@ $ .venv/bin/python cli.py --no-llm "How much is it?"
 }
 ```
 
-(Output trimmed to the fields discussed; the full trace also carries per-step
-timings, vetoed routes and the abstain flag.)
+(Both outputs are trimmed to the fields discussed: `decision` is the single
+step's decision, and the full trace also carries per-step timings, vetoed
+routes and the abstain flag.)
 
 ## Routers
 
@@ -63,9 +64,9 @@ hybrid can use either learned router as its second opinion:
 |---|---|---|---|
 | `rules` | weighted regular-expression rules per route, combined with noisy-OR | 0.02 ms | 94.0% lenient, 80.0% strict |
 | `embeddings` | nearest labelled examples with `all-MiniLM-L6-v2` | 5 ms | 70.0% lenient, 66.0% strict |
-| `classifier` | logistic regression over the same embeddings, trained on labelled queries | 5 ms | 88.0% lenient, 80.0% strict |
+| `classifier` | logistic regression over the same embeddings, trained on labelled queries | 6 ms | 88.0% lenient, 80.0% strict |
 | `hybrid` | rules first, embeddings as a second opinion, explicit `clarify` decision | 5 ms | 92.0% lenient, 88.0% strict |
-| `hybrid-clf` | rules first, classifier as the second opinion | H5 ms | H88.0% lenient, 80.0% strict |
+| `hybrid-clf` | rules first, classifier as the second opinion | 5 ms | 94.0% lenient, 88.0% strict |
 
 The rule router scores well on this set partly because the same person wrote
 the rules and the evaluation set. Replacing nearest-prototype scoring with a
@@ -102,8 +103,9 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m eval.run_eval --dataset eval/heldout2.jsonl --out results/heldout2
 ```
 
-The first run downloads the sentence-transformer model (about 90 MB);
-scikit-learn is used only for the classifier router. The
+The first run downloads the sentence-transformer model (about 90 MB); later
+runs load it from the local cache without contacting the Hub. scikit-learn is
+used only for the classifier router. The
 tools are mocked: the calculator evaluates real arithmetic in a restricted
 parser, the weather tool returns fixed conditions for ten cities and
 deterministic pseudo-data elsewhere, and web search returns fixed snippets.
@@ -161,10 +163,11 @@ web_search: time_now (0.40)              score 0.40
 confidence = 0.85 - 0.5 * 0.40 = 0.65   -> weather, below the hybrid's fast-path threshold
 ```
 
-Example, `"What is the derivative of x squared?"`: the `math_verb` rule
-matches for calculator, but the `conceptual_math` exclusion (`derivative`)
-vetoes it, so calculator scores 0 and the decision is `direct` with
-`vetoed=["calculator"]`.
+Example, `"What is the derivative of x squared?"`: the `conceptual_math`
+exclusion (`derivative`) vetoes the calculator, so it scores 0 whatever else
+matches, and the decision is `direct` with `vetoed=["calculator"]`. The veto
+also matters in the hybrid, where it blocks the embedding router from
+choosing the calculator for this query.
 
 ### Router 2: embeddings
 
@@ -190,8 +193,8 @@ direct answers in the hybrid rather than as clarifications.
 Example, `"What is the weather in Singapore today?"`:
 
 ```
-top-3 mean cosine:  weather 0.60, web_search 0.25, direct 0.25, calculator 0.18
-softmax(scores / 0.08): weather 0.99   -> weather, confidence 0.99
+top-3 mean cosine:  weather 0.60, web_search 0.29, direct 0.26, calculator 0.18
+softmax(scores / 0.08): weather 0.96   -> weather, confidence 0.96
 ```
 
 Example, `"Write a haiku about rain"`:
@@ -229,17 +232,17 @@ and confidence):
 
 | Query | Embeddings | Classifier |
 |---|---|---|
-| Look up the opening hours of the Louvre | weather 0.50 | web_search 0.41 |
+| Look up the opening hours of the Louvre | weather 0.50 | web_search 0.41 (abstains) |
 | Write a haiku about rain | weather 0.53 | direct 0.60 |
 | Explain how weather forecasting models work | weather 0.76 | direct 0.58 |
-| What's the temperature of the sun's surface? | weather 0.76 | direct 0.38 |
-| Tell me about Singapore | weather 0.39 | direct 0.44 |
+| What's the temperature of the sun's surface? | weather 0.76 | direct 0.38 (abstains) |
+| Tell me about Singapore | weather 0.39 | direct 0.44 (abstains) |
 | What time is it in Tokyo? | weather 0.87 | weather 0.36 (abstains) |
 | How do I calculate compound interest? | calculator 0.50 | calculator 0.59 |
 
-The classifier corrects the place-name errors and, where it is still wrong,
-is usually uncertain enough to abstain, which lets the hybrid fall back to a
-direct answer. It remains vulnerable to "calculate" in conceptual questions,
+The classifier corrects the place-name errors, and where it is still wrong
+or only weakly right it falls below the 0.5 abstention threshold, which lets
+the hybrid decide from the rules or fall back to a direct answer. It remains vulnerable to "calculate" in conceptual questions,
 where the rule exclusion is what the hybrid relies on.
 
 ### Router 4: hybrid
@@ -264,12 +267,12 @@ candidate is already `direct`, the assistant answers directly at a confidence
 capped at 0.5 and records the reason. Building the router with
 `on_ambiguous="direct"` disables clarification entirely.
 
-Examples from the evaluation set:
+Examples from the evaluation and held-out sets:
 
 | Query | Rules | Embeddings | Hybrid path | Decision |
 |---|---|---|---|---|
 | What is 245 * 18? | calculator 0.98 | not called | step 1 | calculator |
-| Why do cats purr? | direct 0.70 (`why do`) | abstained (top-3 mean 0.27) | step 3 | direct |
+| Why do cats purr? | direct 0.70 (`why do`) | abstained (top-3 mean 0.16) | step 3 | direct |
 | What's the temperature of the sun's surface? | direct, weather vetoed (`sun`) | weather 0.76 | step 2 | direct |
 | How many seconds are in a day? | abstained | calculator 0.86 | step 4 | calculator |
 | How much is it? | abstained | calculator 0.53 | step 4, tool leads | clarify |
@@ -354,15 +357,54 @@ and executed separately and the answers are joined.
 "Add 14 and 27 and multiply the result by 2"        -> not split ("27" is not a request)
 ```
 
-This handles independent sub-requests. It does not handle dependent ones
-("search for the Bitcoin price and multiply it by 0.5"), which would require
-the output of step 1 to be passed into step 2. See Limitations.
+Dependent steps are handled for numeric references. When a later step refers
+to "it", "that", "this", "the result", "the answer", "the total", or "that"
+or "this" followed by "number", "amount", "price", "value", "figure" or
+"result", and contains arithmetic vocabulary or an operator next to a digit,
+the number produced
+by the previous step's answer is substituted before the step is routed. The
+number is the value after "=" when the previous answer has one (calculator
+answers are written as "expression = value"), otherwise the first number in
+the answer. If the previous answer contains no number, the step is reported
+as unresolved with an explanation rather than routed with the reference left
+in place.
+
+```
+$ .venv/bin/python cli.py --no-llm "Search for the Bitcoin price and multiply it by 0.5"
+```
+
+```json
+{
+  "routes": ["web_search", "calculator"],
+  "steps": [
+    {"step": "Search for the Bitcoin price", "decision": {"route": "web_search"}, "dependency": null,
+     "answer": "Bitcoin is trading at about 60,000 USD and Ethereum at about 3,000 USD (mock q..."},
+    {"step": "multiply it by 0.5", "decision": {"route": "calculator"},
+     "dependency": {"status": "resolved", "value": "60000", "routed_text": "multiply 60000 by 0.5"},
+     "answer": "60000*0.5 = 30000"}
+  ]
+}
+```
+
+`"Tell me a joke and multiply it by 2"` produces routes `["direct",
+"unresolved"]` and the second answer states that the previous step did not
+produce a number. A pronoun outside an arithmetic context is left alone:
+in `"What's the weather in Tokyo and is it warm enough for shorts?"` the
+second step is routed as written. The trace records the substituted text and
+the value for every resolved step, so a wrong substitution is visible.
+Substitution needs the executed answer, so it happens only in
+`Assistant.handle`; `--decision-only` and the evaluator route the parts as
+written.
+
+The scope is narrow by design: one number, taken by position, no
+resolution of which of several numbers was meant, and no non-numeric
+references ("summarise that", "translate it"). See Limitations.
 
 ### Adding a tool
 
 `tests/test_new_tool.py` registers a `unit_converter` with five example
-utterances, one regex rule and a handler, then asserts that all three routers
-route `"Convert 5 km to miles"` to it and that the assistant returns
+utterances, one regex rule and a handler, then asserts that the rule,
+embedding and hybrid routers route `"Convert 5 km to miles"` to it and that the assistant returns
 `3.11 miles`. No router code changes. The embedding router encodes the new
 examples when it is constructed; the rule router compiles the new patterns.
 
@@ -386,7 +428,7 @@ Each item has a primary `expected` route and an `acceptable` list. For
 items `clarify` is usually acceptable and sometimes primary.
 
 The evaluator refuses to run if any evaluation query is a verbatim copy of a
-registry example (`check_no_leakage`). This check is limited: it does not
+registry example or of a classifier training query (`check_no_leakage`). This check is limited: it does not
 detect entity-swapped paraphrases, and it places no constraint on the rule
 regexes, which were written with the evaluation set in view. The rules, the
 prototypes and the evaluation set were all written by the same person, and
@@ -524,8 +566,8 @@ that contain no trigger word (`"Will it be foggy at Heathrow tomorrow
 morning?"`, `"Which movies are showing in Singapore cinemas this weekend?"`);
 the embedding router sent `"Proofread this sentence: their going to the park"`
 to weather. Both hybrids recovered all of these cases; `hybrid-clf` has no
-errors on either held-out set, and the classifier alone misses only the
-"explain ... calculator" items.
+errors on either held-out set. The classifier alone misses the
+"explain ... calculator" item on each set and `"Any idea?"` on the first.
 
 ### Latency
 
@@ -533,11 +575,11 @@ Router latency in isolation (median of 5 calls per query, after warm-up, Apple M
 
 | Router | mean | p50 | p95 | max |
 |---|---|---|---|---|
-| rules | 0.022 | 0.023 | 0.037 | 0.041 |
-| embeddings | 5.764 | 5.285 | 10.250 | 10.720 |
-| hybrid | 3.476 | 5.180 | 5.757 | 6.239 |
-| classifier | 5.880 | 5.379 | 10.716 | 10.928 |
-| hybrid-clf | 4.026 | 5.374 | 7.214 | 18.231 |
+| rules | 0.022 | 0.023 | 0.034 | 0.041 |
+| embeddings | 5.974 | 5.489 | 10.638 | 10.913 |
+| hybrid | 3.571 | 5.325 | 5.984 | 6.439 |
+| classifier | 5.984 | 5.533 | 10.496 | 10.867 |
+| hybrid-clf | 3.650 | 5.337 | 6.328 | 6.593 |
 
 The classifier adds a matrix product to the encoder call, so its cost is the
 same as the embedding router's to within measurement noise.
@@ -549,12 +591,12 @@ End-to-end latency per route, default hybrid router, local `llama3.2:3b` through
 
 | Route | n | total mean | total p50 | total p95 | routing | tool | LLM |
 |---|---|---|---|---|---|---|---|
-| calculator | 7 | 511.1 | 43.7 | 1617.7 | 15.3 | 1.21 | 494.4 |
-| clarify | 2 | 21.6 | 20.2 | 23.1 | 21.4 | 0.00 | 0.0 |
-| direct | 22 | 2171.0 | 2114.0 | 3579.9 | 15.8 | 0.00 | 2155.0 |
-| multi | 4 | 538.7 | 5.7 | 2146.8 | 6.2 | 1.68 | 530.6 |
-| weather | 9 | 75.3 | 9.8 | 591.1 | 74.9 | 0.37 | 0.0 |
-| web_search | 6 | 6.7 | 0.2 | 23.0 | 6.6 | 0.13 | 0.0 |
+| calculator | 7 | 542.3 | 456.5 | 1531.0 | 72.9 | 2.01 | 466.8 |
+| clarify | 2 | 23.1 | 21.1 | 25.2 | 23.0 | 0.00 | 0.0 |
+| direct | 22 | 2092.2 | 2068.8 | 3334.3 | 17.7 | 0.00 | 2074.2 |
+| multi | 4 | 520.2 | 1.8 | 2078.0 | 11.9 | 0.45 | 507.7 |
+| weather | 9 | 46.0 | 9.2 | 291.0 | 45.3 | 0.63 | 0.0 |
+| web_search | 6 | 6.9 | 0.2 | 26.1 | 6.8 | 0.10 | 0.0 |
 
 Three observations follow from this table.
 
@@ -567,11 +609,11 @@ Three observations follow from this table.
   (`"What is 10 degrees Celsius in Fahrenheit?"`, `"How many seconds are in a
   day?"`, `"What's 5 plus the number of planets?"`) had no parseable
   expression, so the assistant fell back to the LLM. The calculator's p50 of
-  44 ms is the cost of the tool path itself; the mean of 511 ms reflects the
+  457 ms is the cost of the tool path itself; the mean of 542 ms reflects the
   tool's limited scope.
 * Embedding calls are slower immediately after an LLM call. On the shared CPU,
-  encoder routing took a median of 26 ms when the previous query had run the
-  LLM and 10 ms otherwise (cold caches and idle threads). This is why the
+  encoder routing took a median of 27 ms when the previous query had run the
+  LLM and 12 ms otherwise (cold caches and idle threads). This is why the
   per-route routing column is higher than the isolated router latency above.
 
 ### Comparison of the approaches
@@ -636,7 +678,8 @@ without someone reviewing the failures.
 ### Design iterations
 
 The first evaluation run scored the hybrid at 72%, below the rule router
-alone. Three changes were made, all general rather than query-specific:
+alone. The following changes were made, all general rather than
+query-specific:
 
 1. The embedding router gained the absolute-similarity cap. Before it, `"What
    time is it in Tokyo?"` was routed to weather at 0.99 because softmax only
@@ -676,12 +719,13 @@ alone. Three changes were made, all general rather than query-specific:
    eight batches (four routes, two phrasing styles, a quarter of each batch
    written as traps containing another route's vocabulary), then screened by
    two independent model-based judges per batch, which removed 13 of 320
-   candidates. No training query shares 60% or more of its tokens with any
+   candidates. No training query shares more than 60% of its tokens with any
    evaluation or registry query. At the same time, 60 unlabelled queries were
    generated in the voice of two different users for an independent human
    labeller (`eval/independent/`).
-Changes of this kind are a continuing maintenance cost for any system based
-on rules or prototypes.
+
+The changes above are a continuing maintenance cost for any system based on
+rules or prototypes.
 
 ## Limitations
 
@@ -691,11 +735,14 @@ on rules or prototypes.
   bound on what production traffic would give.
 * The encoder responds to topic rather than intent. `all-MiniLM-L6-v2` is a
   general sentence encoder. `"What time is it in Tokyo?"` still routes to
-  weather because "in Tokyo" outweighs "what time". A small classifier
-  fine-tuned on labelled routing data, or a cross-encoder reranker, would
-  address this at the cost of training data and latency.
-* Multi-step routing covers independent steps only. Sub-requests that depend
-  on each other's output are not chained.
+  weather because "in Tokyo" outweighs "what time". The classifier lowers
+  its confidence on this query enough to abstain but does not route it
+  correctly either; a cross-encoder reranker or more training data of this
+  kind would be the next step.
+* Dependent steps are resolved for numbers only. The value is the one after
+  "=" in the previous answer or, failing that, the first number in it; a
+  previous answer with several numbers is not disambiguated, and non-numeric
+  references ("summarise that") are not resolved.
 * Mock tools. Real weather and search APIs would add 200 to 800 ms per call,
   which changes the latency profile: the router's 6 ms becomes negligible and
   the relevant figure becomes how often an unnecessary tool call is made.
@@ -723,8 +770,6 @@ on rules or prototypes.
 * Retrain the classifier on labelled production traffic and calibrate its
   probabilities on a held-out split, so the abstain threshold is set from
   measured reliability rather than by inspection.
-* Chain dependent multi-step requests by substituting a step's answer into
-  the next step's query.
 * Let the LLM rephrase tool output for the user (currently the tool text is
   returned verbatim to keep tool routes at millisecond latency).
 * Cache query embeddings for repeated queries.
@@ -739,7 +784,7 @@ router/
   embeddings.py  EmbeddingRouter
   classifier.py  ClassifierRouter (logistic regression over the same embeddings)
   hybrid.py      HybridRouter (rules plus either learned router)
-  multistep.py   compound-query splitting
+  multistep.py   compound-query splitting and numeric reference resolution
   llm.py         OllamaLLM, MockLLM
   app.py         Assistant: route, execute, answer, latency trace, 500-character cap
 eval/
@@ -751,6 +796,6 @@ eval/
   run_eval.py    metrics, latency, results writer
 results/         metrics.json, results.md, examples.md, predictions.jsonl, e2e.jsonl
                  (+ heldout/, heldout2/, heldout-v1-frozen/)
-tests/           43 pytest tests, including the add-a-tool test
+tests/           59 pytest tests, including the add-a-tool test
 cli.py           one-shot command line
 ```

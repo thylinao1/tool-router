@@ -19,7 +19,8 @@ class RoutingDecision:
 
     def to_dict(self) -> dict:
         d = asdict(self)
-        d["confidence"] = round(self.confidence, 3)
+        d["abstained"] = bool(self.abstained)          # routers may hand over numpy booleans
+        d["confidence"] = round(float(self.confidence), 3)
         d["latency_ms"] = round(self.latency_ms, 3)
         d["candidates"] = [(r, round(s, 3)) for r, s in self.candidates]
         return d

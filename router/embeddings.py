@@ -13,7 +13,9 @@ looks like nothing we have seen should not be confident about anything.
 
 from __future__ import annotations
 
+import os
 import time
+from pathlib import Path
 
 import numpy as np
 
@@ -21,6 +23,15 @@ from .schema import RoutingDecision
 from .tools import ToolRegistry
 
 DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+_CACHE_DIR = Path.home() / ".cache" / "huggingface" / "hub" / "models--sentence-transformers--all-MiniLM-L6-v2"
+
+
+def load_encoder(model_name: str = DEFAULT_MODEL):
+    """Load the sentence encoder; once cached, skip the Hub check so start-up is silent and offline."""
+    if model_name == DEFAULT_MODEL and _CACHE_DIR.exists():
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
+    from sentence_transformers import SentenceTransformer
+    return SentenceTransformer(model_name, device="cpu")
 
 
 class EmbeddingRouter:
@@ -29,14 +40,12 @@ class EmbeddingRouter:
     def __init__(self, registry: ToolRegistry, model_name: str = DEFAULT_MODEL,
                  temperature: float = 0.08, top_k: int = 3,
                  min_similarity: float = 0.3, far_cap: float = 0.5) -> None:
-        from sentence_transformers import SentenceTransformer
-
         self.registry = registry
         self.temperature = temperature
         self.top_k = top_k
         self.min_similarity = min_similarity
         self.far_cap = far_cap
-        self.model = SentenceTransformer(model_name, device="cpu")
+        self.model = load_encoder(model_name)
 
         self.labels: list[str] = []
         self.texts: list[str] = []

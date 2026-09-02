@@ -38,21 +38,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.292
+        "latency_ms": 0.273
       },
       "answer": "81 / 9 + 4 = 13",
-      "tool_ms": 3.294,
+      "tool_ms": 4.394,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
   "answer": "81 / 9 + 4 = 13",
   "latency_ms": {
-    "routing": 0.292,
-    "tool": 3.294,
+    "routing": 0.273,
+    "tool": 4.394,
     "llm": 0.0,
-    "total": 3.733
+    "total": 4.803
   },
   "fallback": false,
   "llm": "ollama"
@@ -95,21 +96,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.1
+        "latency_ms": 0.089
       },
       "answer": "Weather in Manila: 25°C, light rain, humidity 80% (mock data)",
-      "tool_ms": 0.126,
+      "tool_ms": 0.064,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
   "answer": "Weather in Manila: 25°C, light rain, humidity 80% (mock data)",
   "latency_ms": {
-    "routing": 0.1,
-    "tool": 0.126,
+    "routing": 0.089,
+    "tool": 0.064,
     "llm": 0.0,
-    "total": 0.275
+    "total": 0.208
   },
   "fallback": false,
   "llm": "ollama"
@@ -152,21 +154,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 20.232
+        "latency_ms": 20.371
       },
-      "answer": "Top result for 'Who is leading the Premier League right now?' (mock search): no canned snippet; a real engine would return live pages here.",
-      "tool_ms": 0.555,
+      "answer": "No canned snippet; a real engine would return live pages here (mock search for 'Who is leading the Premier League right now?').",
+      "tool_ms": 0.503,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
-  "answer": "Top result for 'Who is leading the Premier League right now?' (mock search): no canned snippet; a real engine would return live pages here.",
+  "answer": "No canned snippet; a real engine would return live pages here (mock search for 'Who is leading the Premier League right now?').",
   "latency_ms": {
-    "routing": 20.232,
-    "tool": 0.555,
+    "routing": 20.371,
+    "tool": 0.503,
     "llm": 0.0,
-    "total": 20.833
+    "total": 20.921
   },
   "fallback": false,
   "llm": "ollama"
@@ -211,21 +214,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
           "weather"
         ],
         "abstained": false,
-        "latency_ms": 17.166
+        "latency_ms": 12.405
       },
-      "answer": "A transformer model is a type of neural network architecture that uses self-attention mechanisms to process sequential data, such as text or images. It consists of an encoder and a decoder, where the encoder takes in input sequences and outputs a continuous representation, and the decoder generates output sequences based on this representation. The self-attention mechanism allows the model to weigh the importance of different input elements relative to each other, enabling it to capture long-range dependencies and contextual relationships. This allows the model to learn complex patterns and relationships in the input data.",
+      "answer": "A transformer model is a type of neural network that uses self-attention mechanisms to process sequential data, such as text or images. It consists of an encoder and a decoder, where the encoder takes in input sequences and outputs a continuous representation, and the decoder generates output sequences based on this representation. The self-attention mechanism allows the model to weigh the importance of different input elements relative to each other, enabling it to capture long-range dependencies and relationships. This allows the model to learn complex patterns and relationships in the input data.",
       "tool_ms": 0.0,
-      "llm_ms": 2987.395,
+      "llm_ms": 2946.524,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
-  "answer": "A transformer model is a type of neural network architecture that uses self-attention mechanisms to process sequential data, such as text or images. It consists of an encoder and a decoder, where the encoder takes in input sequences and outputs a continuous representation, and the decoder generates output sequences based on this representation. The self-attention mechanism allows the model to weigh the importance of different input elements relative to each other, enabling it to capture long-range dependencies and contextual relationships. This allows the model to learn complex patterns and relationships in the input data.",
+  "answer": "A transformer model is a type of neural network that uses self-attention mechanisms to process sequential data, such as text or images. It consists of an encoder and a decoder, where the encoder takes in input sequences and outputs a continuous representation, and the decoder generates output sequences based on this representation. The self-attention mechanism allows the model to weigh the importance of different input elements relative to each other, enabling it to capture long-range dependencies and relationships. This allows the model to learn complex patterns and relationships in the input data.",
   "latency_ms": {
-    "routing": 17.166,
+    "routing": 12.405,
     "tool": 0.0,
-    "llm": 2987.395,
-    "total": 3004.673
+    "llm": 2946.524,
+    "total": 2959.122
   },
   "fallback": false,
   "llm": "ollama"
@@ -269,13 +273,14 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.126
+        "latency_ms": 0.053
       },
       "answer": "Weather in Lisbon: 19°C, light rain, humidity 74% (mock data)",
-      "tool_ms": 0.217,
+      "tool_ms": 0.073,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     },
     {
       "step": "what's 9 * 9",
@@ -304,21 +309,22 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.121
+        "latency_ms": 0.123
       },
       "answer": "9 * 9 = 81",
-      "tool_ms": 0.754,
+      "tool_ms": 0.334,
       "llm_ms": 0.0,
       "fallback": false,
-      "asked_by": null
+      "asked_by": null,
+      "dependency": null
     }
   ],
   "answer": "Weather in Lisbon: 19°C, light rain, humidity 74% (mock data)\n9 * 9 = 81",
   "latency_ms": {
-    "routing": 0.247,
-    "tool": 0.971,
+    "routing": 0.176,
+    "tool": 0.407,
     "llm": 0.0,
-    "total": 1.42
+    "total": 0.684
   },
   "fallback": false,
   "llm": "ollama"

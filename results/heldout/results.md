@@ -104,11 +104,11 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 
 | Router | mean | p50 | p95 | max |
 |---|---|---|---|---|
-| rules | 0.023 | 0.023 | 0.034 | 0.035 |
-| embeddings | 6.149 | 5.946 | 6.584 | 11.222 |
-| hybrid | 3.852 | 5.755 | 6.484 | 6.606 |
-| classifier | 6.250 | 5.957 | 6.737 | 11.295 |
-| hybrid-clf | 3.890 | 5.851 | 6.609 | 6.669 |
+| rules | 0.024 | 0.023 | 0.034 | 0.036 |
+| embeddings | 6.031 | 5.882 | 6.196 | 11.091 |
+| hybrid | 3.647 | 5.446 | 6.003 | 6.115 |
+| classifier | 5.955 | 5.682 | 6.069 | 10.921 |
+| hybrid-clf | 3.668 | 5.420 | 5.986 | 6.055 |
 
 ## Decision paths: hybrid
 
@@ -136,11 +136,11 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 
 | Route | n | total mean | total p50 | total p95 | routing | tool | llm |
 |---|---|---|---|---|---|---|---|
-| calculator | 4 | 234.2 | 4.0 | 931.6 | 3.68 | 1.19 | 229.2 |
-| direct | 8 | 1934.6 | 1914.1 | 3056.7 | 17.82 | 0.00 | 1916.6 |
-| multi | 1 | 0.6 | 0.6 | 0.6 | 0.12 | 0.36 | 0.0 |
-| weather | 5 | 18.1 | 26.1 | 36.8 | 17.85 | 0.25 | 0.0 |
-| web_search | 4 | 16.3 | 23.1 | 28.7 | 16.08 | 0.17 | 0.0 |
+| calculator | 4 | 211.7 | 4.7 | 840.7 | 3.11 | 1.31 | 207.2 |
+| direct | 8 | 2052.5 | 2464.4 | 3090.9 | 19.53 | 0.00 | 2032.7 |
+| multi | 1 | 0.6 | 0.6 | 0.6 | 0.12 | 0.44 | 0.0 |
+| weather | 5 | 13.8 | 21.4 | 23.1 | 13.42 | 0.36 | 0.0 |
+| web_search | 4 | 18.8 | 20.0 | 43.4 | 18.54 | 0.17 | 0.0 |
 
 ## Errors per router
 

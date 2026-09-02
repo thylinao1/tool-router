@@ -49,7 +49,7 @@ class HybridRouter:
         if len(e.candidates) < 2:   # a registry with one route cannot be ambiguous
             return self._tag(r, "rules", "only one route registered")
         top, second = e.candidates[0][0], e.candidates[1][0]
-        detail = (f"rules chose {r.route} ({r.confidence:.2f}), embeddings chose {e.route} "
+        detail = (f"rules chose {r.route} ({r.confidence:.2f}), {self.second.name} chose {e.route} "
                   f"({e.confidence:.2f}); top candidates {top} and {second} are too close")
         # Ask only when the leading candidate is a tool, since a wrong tool call has the higher cost.
         # Otherwise answer directly at low confidence.
@@ -70,10 +70,10 @@ class HybridRouter:
 
         e = self.second.route(query)
         if e.route in r.vetoed:
-            return self._tag(r, "veto", f"embeddings chose {e.route} but a rule vetoed it")
+            return self._tag(r, "veto", f"{self.second.name} chose {e.route} but a rule vetoed it")
         if e.abstained:
             if not r.abstained:
-                return self._tag(r, "rules-after-abstain", "embeddings abstained")
+                return self._tag(r, "rules-after-abstain", f"{self.second.name} abstained")
             return self._ambiguous(r, e)
         if r.abstained:
             if e.confidence >= self.embed_accept:
@@ -83,7 +83,7 @@ class HybridRouter:
             return RoutingDecision(
                 route=e.route, confidence=(r.confidence + e.confidence) / 2, router=f"{self.name}(agree)",
                 candidates=e.candidates, vetoed=r.vetoed,
-                reason=f"rules ({r.confidence:.2f}) and embeddings ({e.confidence:.2f}) both chose {e.route}")
+                reason=f"rules ({r.confidence:.2f}) and {self.second.name} ({e.confidence:.2f}) both chose {e.route}")
         if e.confidence >= self.strong_accept:
             return self._tag(e, self.second.name, f"overrides rules ({r.route} {r.confidence:.2f})")
         return self._ambiguous(r, e)

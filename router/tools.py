@@ -71,9 +71,17 @@ class ToolRegistry:
 # calculator (real, sandboxed arithmetic; only its scope is limited)
 # --------------------------------------------------------------------------
 
+_NUM = r"(-?\d+(?:\.\d+)?)"
 _WORD_OPS = [
-    (r"\bmultiply\s+(\d+(?:\.\d+)?)\s+by\s+", r"\1*"),
-    (r"\bsubtract\s+(\d+(?:\.\d+)?)\s+from\s+(\d+(?:\.\d+)?)", r"\2-\1"),
+    (rf"\bmultiply\s+{_NUM}\s+by\s+", r"\1*"),
+    (rf"\bdivide\s+{_NUM}\s+by\s+", r"\1/"),
+    (rf"\bsubtract\s+{_NUM}\s+from\s+{_NUM}", r"\2-\1"),
+    (rf"\badd\s+{_NUM}\s+to\s+{_NUM}", r"\2+\1"),
+    (rf"\bsquare\s+{_NUM}", r"(\1)**2"),
+    (r"\b(?:half|a half) of\s*", "0.5*"),
+    (r"\bhalve\s+(?=-?\d)", "0.5*"),
+    (r"\bdouble\s+(?=-?\d)", "2*"),
+    (r"\btriple\s+(?=-?\d)", "3*"),
     (r"\bsquare root of\s*", "sqrt("),
     (r"\bsqrt\s+(?=\d)", "sqrt("),
     (r"\bto the power of\b", "**"),
@@ -139,7 +147,7 @@ def _safe_eval(node: ast.AST) -> float:
 
 def calculator(query: str) -> ToolResult:
     expr = extract_expression(query)
-    if not expr or not re.search(r"[+\-*/(]", expr):
+    if not expr or not re.search(r"\d\s*[+\-*/%]|\(", expr):   # an operator applied to a number, not a bare literal
         return ToolResult("error", "no arithmetic expression found")
     if len(expr) > _MAX_EXPR_CHARS:
         return ToolResult("error", f"expression longer than {_MAX_EXPR_CHARS} characters")
@@ -147,7 +155,7 @@ def calculator(query: str) -> ToolResult:
         value = _safe_eval(ast.parse(expr, mode="eval"))
         if isinstance(value, complex):
             raise ValueError("no real result")
-        shown = int(value) if float(value).is_integer() else round(value, 6)
+        shown = int(value) if float(value).is_integer() else f"{round(value, 6):.6f}".rstrip("0")
     except (ValueError, SyntaxError, ZeroDivisionError, TypeError, OverflowError,
             RecursionError, MemoryError) as exc:
         return ToolResult("error", f"could not evaluate {expr!r}: {exc}")
@@ -199,7 +207,7 @@ def weather(query: str) -> ToolResult:
 
 _CANNED_RESULTS = [
     (r"formula 1|\bf1\b|grand prix", "Formula 1: the most recent Grand Prix was won by the driver starting from pole; full results on formula1.com."),
-    (r"bitcoin|ethereum|crypto|btc|eth", "Crypto prices move by the minute; the live quote is on coinmarketcap.com."),
+    (r"bitcoin|ethereum|crypto|btc|eth", "Bitcoin is trading at about 60,000 USD and Ethereum at about 3,000 USD (mock quote; a live engine would return the current figures)."),
     (r"openai|anthropic|google|microsoft|spacex", "Latest company news: see the newsroom and recent press coverage."),
     (r"president|prime minister|ceo|mayor", "Current officeholder: see the official government or company site for the up-to-date name."),
     (r"usd|sgd|eur|exchange rate|convert", "Live exchange rates are published by xe.com and your bank."),
@@ -210,8 +218,8 @@ def web_search(query: str) -> ToolResult:
     low = query.lower()
     for pattern, snippet in _CANNED_RESULTS:
         if re.search(pattern, low):
-            return ToolResult("ok", f"Top result for {query!r} (mock search): {snippet}")
-    return ToolResult("ok", f"Top result for {query!r} (mock search): no canned snippet; a real engine would return live pages here.")
+            return ToolResult("ok", f"{snippet} (mock search, top result for {query!r})")
+    return ToolResult("ok", f"No canned snippet; a real engine would return live pages here (mock search for {query!r}).")
 
 
 # --------------------------------------------------------------------------
@@ -242,7 +250,7 @@ def build_default_registry() -> ToolRegistry:
         ],
         patterns=[
             ("arithmetic_expression", r"(?<!\d)\d+(?:\.\d+)?\s*[-+*/x×÷^%]\s*\d", 0.95),
-            ("math_verb", r"\b(calculate|compute|sum of|product of|square root|sqrt|percent of|% of|times|plus|minus|divided by|multiplied by|to the power)\b", 0.7),
+            ("math_verb", r"\b(calculate|compute|sum of|product of|square root|sqrt|percent of|% of|times|plus|minus|divided by|multiplied by|multiply|divide|subtract|to the power)\b", 0.7),
             ("what_is_number", r"\b(what('| i)s|how much is)\s+\d", 0.6),
         ],
         exclusions=[

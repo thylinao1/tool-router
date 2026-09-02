@@ -8,7 +8,7 @@ def test_calculator_handles_spec_example():
 def test_calculator_handles_words_and_percent():
     assert calculator("Calculate 15% of 80").text.endswith("= 12")
     assert calculator("What is the square root of 144?").text.endswith("= 12")
-    assert calculator("twelve plus 3").status == "ok" or calculator("12 plus 3").text.endswith("= 15")
+    assert calculator("12 plus 3").text.endswith("= 15")
 
 
 def test_calculator_rejects_code():
@@ -31,8 +31,9 @@ def test_weather_unknown_city_is_deterministic():
     assert weather("Weather in Zanzibar").text == weather("Weather in Zanzibar").text
 
 
-def test_web_search_returns_snippet():
-    assert web_search("Who won the latest Formula 1 race?").status == "ok"
+def test_web_search_returns_matching_snippet():
+    assert "Formula 1" in web_search("Who won the latest Formula 1 race?").text
+    assert "No canned snippet" in web_search("opening hours of the Louvre").text
 
 
 def test_calculator_caps_result_magnitude():

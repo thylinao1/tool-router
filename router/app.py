@@ -4,7 +4,9 @@ Fallback rules:
   * route == clarify          -> ask the user which of the top two candidates they meant
   * tool returns needs_input  -> relay the tool's own clarifying question
   * tool returns error        -> answer with the LLM instead, flagged as a fallback
-Each step records who asked for clarification, if anyone: "router", "tool" or None.
+  * a step refers to the previous result but that result has no number -> reported as unresolved
+Each step records who asked for clarification, if anyone: "router", "tool" or None, and
+whether a value from the previous step was substituted into it.
 """
 
 from __future__ import annotations
@@ -13,9 +15,10 @@ import time
 
 from .schema import RoutingDecision, DIRECT, CLARIFY
 from .tools import ToolRegistry
-from .multistep import split_compound_query
+from .multistep import split_compound_query, resolve_reference
 
 MAX_QUERY_CHARS = 500
+UNRESOLVED = "unresolved"
 
 
 class Assistant:
@@ -31,7 +34,9 @@ class Assistant:
         tool_ms = llm_ms = 0.0
         fallback = False
         asked_by = None
-        if decision.route == CLARIFY:
+        if decision.route == UNRESOLVED:
+            answer = "The previous step did not produce a number, so this step cannot use its result."
+        elif decision.route == CLARIFY:
             asked_by = "router"
             names = [self._describe(c[0]) for c in decision.candidates[:2]]
             answer = (f"I can help with that, but I am not sure whether you want {' or '.join(names)}. "
@@ -68,9 +73,19 @@ class Assistant:
                                    "total": round((time.perf_counter() - t0) * 1000, 3)},
                     "fallback": False, "llm": self.llm.name}
         steps = []
+        previous_answer = None
         for part in split_compound_query(query):
-            decision = self.router.route(part)
-            steps.append(self._execute(part, decision))
+            text, status, value = resolve_reference(part, previous_answer)
+            if status == UNRESOLVED:
+                decision = RoutingDecision(route=UNRESOLVED, confidence=0.0, router="dependency", abstained=True,
+                                           reason="this step refers to the previous result, but that answer contains no number")
+            else:
+                decision = self.router.route(text)
+            step = self._execute(text, decision)
+            step["step"] = part
+            step["dependency"] = None if status == "none" else {"status": status, "value": value, "routed_text": text}
+            previous_answer = step["answer"]
+            steps.append(step)
         total_ms = (time.perf_counter() - t0) * 1000
         return {
             "query": query,
