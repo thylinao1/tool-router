@@ -1,0 +1,22 @@
+{"id": 1, "query": "What's 81 divided by 9 plus 4?", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 2, "query": "Umbrella needed in Manila tomorrow?", "expected": "weather", "acceptable": ["weather", "clarify"], "category": "ambiguous", "note": ""}
+{"id": 3, "query": "Who is leading the Premier League right now?", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 4, "query": "Describe how a transformer model works", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 5, "query": "Compute 7 times 8 minus 6", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 6, "query": "How cold will Helsinki be tonight?", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 7, "query": "Recent news about the Mars rover", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 8, "query": "Write a short story about a lighthouse keeper", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 9, "query": "What is 2 to the power of 16?", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 10, "query": "Humidity in Jakarta at the moment", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 11, "query": "What's the current gold price per ounce?", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 12, "query": "Who painted the Mona Lisa?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": ""}
+{"id": 13, "query": "Will it be foggy at Heathrow tomorrow morning?", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 14, "query": "How many centimeters are in 3 meters?", "expected": "calculator", "acceptable": ["calculator", "direct"], "category": "overlap", "note": ""}
+{"id": 15, "query": "What's the freezing point of ethanol?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": "temperature-like, not weather"}
+{"id": 16, "query": "Explain why the calculator app rounds numbers", "expected": "direct", "acceptable": ["direct"], "category": "overlap", "note": "mentions calculator"}
+{"id": 17, "query": "Which movies are showing in Singapore cinemas this weekend?", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 18, "query": "And?", "expected": "clarify", "acceptable": ["clarify", "direct"], "category": "ambiguous", "note": ""}
+{"id": 19, "query": "Weather please", "expected": "weather", "acceptable": ["weather", "clarify"], "category": "ambiguous", "note": ""}
+{"id": 20, "query": "Is it sunny in Lisbon and what's 9 * 9?", "expected": "multi", "acceptable": ["multi"], "category": "multi", "steps": ["weather", "calculator"], "note": ""}
+{"id": 21, "query": "Proofread this sentence: their going to the park", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 22, "query": "How's it looking?", "expected": "clarify", "acceptable": ["clarify", "direct", "weather"], "category": "ambiguous", "note": ""}

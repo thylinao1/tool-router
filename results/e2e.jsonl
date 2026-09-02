@@ -1,0 +1,50 @@
+{"id": 1, "query": "What is 245 * 18?", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 2.177, "tool_ms": 7.014, "llm_ms": 0.0, "total_ms": 12.307}
+{"id": 2, "query": "What is the weather in Singapore today?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 339.727, "tool_ms": 0.044, "llm_ms": 0.0, "total_ms": 339.823}
+{"id": 3, "query": "Who won the latest Formula 1 race?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 0.054, "tool_ms": 0.105, "llm_ms": 0.0, "total_ms": 0.175}
+{"id": 4, "query": "Explain gradient descent.", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 8.803, "tool_ms": 0.0, "llm_ms": 3132.913, "total_ms": 3142.077}
+{"id": 5, "query": "Calculate 15% of 80", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 50.802, "tool_ms": 0.41, "llm_ms": 0.0, "total_ms": 51.317}
+{"id": 6, "query": "Is it raining in New York right now?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 8.659, "tool_ms": 0.022, "llm_ms": 0.0, "total_ms": 8.705}
+{"id": 7, "query": "What's the latest news on OpenAI?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 6.844, "tool_ms": 0.256, "llm_ms": 0.0, "total_ms": 7.121}
+{"id": 8, "query": "What is the square root of 144?", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 6.356, "tool_ms": 0.276, "llm_ms": 0.0, "total_ms": 6.651}
+{"id": 9, "query": "How hot is it in Dubai today?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 5.868, "tool_ms": 0.007, "llm_ms": 0.0, "total_ms": 5.892}
+{"id": 10, "query": "Who is the current president of France?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 0.039, "tool_ms": 0.082, "llm_ms": 0.0, "total_ms": 0.135}
+{"id": 11, "query": "2+2", "routes": ["calculator"], "fallback": false, "asked_by": [null], "routing_ms": 0.009, "tool_ms": 0.034, "llm_ms": 0.0, "total_ms": 0.053}
+{"id": 12, "query": "Forecast for Tokyo this weekend", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 0.025, "tool_ms": 0.003, "llm_ms": 0.0, "total_ms": 0.037}
+{"id": 13, "query": "What's the price of Ethereum right now?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 5.843, "tool_ms": 0.008, "llm_ms": 0.0, "total_ms": 5.866}
+{"id": 14, "query": "Look up the opening hours of the Louvre", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 0.035, "tool_ms": 0.079, "llm_ms": 0.0, "total_ms": 0.126}
+{"id": 15, "query": "Write a haiku about autumn", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.022, "tool_ms": 0.0, "llm_ms": 645.382, "total_ms": 645.445}
+{"id": 16, "query": "How does a hash map work?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 14.005, "tool_ms": 0.0, "llm_ms": 2814.439, "total_ms": 2828.762}
+{"id": 17, "query": "Give me three tips for better sleep", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 26.462, "tool_ms": 0.0, "llm_ms": 2288.353, "total_ms": 2314.946}
+{"id": 18, "query": "How do I calculate compound interest?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 17.92, "tool_ms": 0.0, "llm_ms": 3142.454, "total_ms": 3160.498}
+{"id": 19, "query": "What is the boiling point of water in Fahrenheit?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 24.246, "tool_ms": 0.0, "llm_ms": 1432.633, "total_ms": 1456.926}
+{"id": 20, "query": "Write a haiku about rain", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.038, "tool_ms": 0.0, "llm_ms": 648.421, "total_ms": 648.604}
+{"id": 21, "query": "What's the temperature of the sun's surface?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 29.723, "tool_ms": 0.0, "llm_ms": 2268.932, "total_ms": 2298.916}
+{"id": 22, "query": "What is the derivative of x squared?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 18.666, "tool_ms": 0.0, "llm_ms": 2058.717, "total_ms": 2077.59}
+{"id": 23, "query": "Calculate the average yearly rainfall in Singapore", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 23.253, "tool_ms": 0.025, "llm_ms": 0.0, "total_ms": 23.33}
+{"id": 24, "query": "What's the capital of Australia?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 11.316, "tool_ms": 0.0, "llm_ms": 1812.266, "total_ms": 1823.729}
+{"id": 25, "query": "Convert 100 USD to SGD", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 13.491, "tool_ms": 0.0, "llm_ms": 2369.937, "total_ms": 2383.579}
+{"id": 26, "query": "What is 10 degrees Celsius in Fahrenheit?", "routes": ["calculator"], "fallback": true, "asked_by": [null], "routing_ms": 15.071, "tool_ms": 0.138, "llm_ms": 1588.348, "total_ms": 1603.751}
+{"id": 27, "query": "Which Python version introduced the walrus operator?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 23.286, "tool_ms": 0.0, "llm_ms": 2006.407, "total_ms": 2030.01}
+{"id": 28, "query": "How many seconds are in a day?", "routes": ["calculator"], "fallback": true, "asked_by": [null], "routing_ms": 22.671, "tool_ms": 0.158, "llm_ms": 1240.271, "total_ms": 1263.299}
+{"id": 29, "query": "Is Python better than JavaScript for beginners?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.186, "tool_ms": 0.0, "llm_ms": 2734.099, "total_ms": 2734.593}
+{"id": 30, "query": "What's the score of the Arsenal game?", "routes": ["web_search"], "fallback": false, "asked_by": [null], "routing_ms": 24.328, "tool_ms": 0.092, "llm_ms": 0.0, "total_ms": 24.51}
+{"id": 31, "query": "Explain how weather forecasting models work", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 11.863, "tool_ms": 0.0, "llm_ms": 3411.113, "total_ms": 3423.236}
+{"id": 32, "query": "Tell me about Singapore", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 49.173, "tool_ms": 0.0, "llm_ms": 2885.056, "total_ms": 2934.581}
+{"id": 33, "query": "What's the weather?", "routes": ["weather"], "fallback": false, "asked_by": ["tool"], "routing_ms": 0.452, "tool_ms": 2.152, "llm_ms": 0.0, "total_ms": 2.711}
+{"id": 34, "query": "How many days until Christmas?", "routes": ["clarify"], "fallback": false, "asked_by": ["router"], "routing_ms": 27.117, "tool_ms": 0.0, "llm_ms": 0.0, "total_ms": 27.211}
+{"id": 35, "query": "Temperature", "routes": ["weather"], "fallback": false, "asked_by": ["tool"], "routing_ms": 0.055, "tool_ms": 0.035, "llm_ms": 0.0, "total_ms": 0.117}
+{"id": 36, "query": "Is it a good day to go hiking in Vancouver?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 11.843, "tool_ms": 0.013, "llm_ms": 0.0, "total_ms": 11.89}
+{"id": 37, "query": "What's 5 plus the number of planets?", "routes": ["calculator"], "fallback": true, "asked_by": [null], "routing_ms": 0.065, "tool_ms": 0.172, "llm_ms": 684.002, "total_ms": 684.289}
+{"id": 38, "query": "How much is it?", "routes": ["clarify"], "fallback": false, "asked_by": ["router"], "routing_ms": 14.879, "tool_ms": 0.0, "llm_ms": 0.0, "total_ms": 14.926}
+{"id": 39, "query": "What's happening?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 10.47, "tool_ms": 0.0, "llm_ms": 1694.802, "total_ms": 1705.412}
+{"id": 40, "query": "What time is it in Tokyo?", "routes": ["weather"], "fallback": false, "asked_by": [null], "routing_ms": 15.744, "tool_ms": 0.056, "llm_ms": 0.0, "total_ms": 15.858}
+{"id": 41, "query": "Summarize the theory of relativity in two sentences", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 45.09, "tool_ms": 0.0, "llm_ms": 2366.151, "total_ms": 2411.776}
+{"id": 42, "query": "Draft a polite email declining a meeting", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.532, "tool_ms": 0.0, "llm_ms": 2804.927, "total_ms": 2805.861}
+{"id": 43, "query": "What is the difference between TCP and UDP?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 41.385, "tool_ms": 0.0, "llm_ms": 3602.776, "total_ms": 3644.52}
+{"id": 44, "query": "Translate 'thank you very much' to Japanese", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.428, "tool_ms": 0.0, "llm_ms": 724.594, "total_ms": 725.201}
+{"id": 45, "query": "Why do cats purr?", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 30.698, "tool_ms": 0.0, "llm_ms": 3205.414, "total_ms": 3236.443}
+{"id": 46, "query": "hello", "routes": ["direct"], "fallback": false, "asked_by": [null], "routing_ms": 0.356, "tool_ms": 0.0, "llm_ms": 820.149, "total_ms": 820.769}
+{"id": 47, "query": "What's the weather in Tokyo and what is 12 * 7?", "routes": ["weather", "calculator"], "fallback": false, "asked_by": [null, null], "routing_ms": 0.306, "tool_ms": 4.925, "llm_ms": 0.0, "total_ms": 5.359}
+{"id": 48, "query": "Who won the last F1 race and is it raining in Singapore?", "routes": ["web_search", "weather"], "fallback": false, "asked_by": [null, null], "routing_ms": 0.088, "tool_ms": 0.157, "llm_ms": 0.0, "total_ms": 0.413}
+{"id": 49, "query": "Calculate 45 * 3 and then explain what a prime number is", "routes": ["calculator", "direct"], "fallback": false, "asked_by": [null, null], "routing_ms": 212.688, "tool_ms": 0.084, "llm_ms": 2635.743, "total_ms": 2848.723}
+{"id": 50, "query": "Search for the latest Bitcoin price and calculate 0.5 * 60000", "routes": ["web_search", "calculator"], "fallback": false, "asked_by": [null, null], "routing_ms": 0.186, "tool_ms": 0.353, "llm_ms": 0.0, "total_ms": 0.603}

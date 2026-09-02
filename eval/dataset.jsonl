@@ -1,0 +1,50 @@
+{"id": 1, "query": "What is 245 * 18?", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": "spec example"}
+{"id": 2, "query": "What is the weather in Singapore today?", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": "spec example"}
+{"id": 3, "query": "Who won the latest Formula 1 race?", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": "spec example"}
+{"id": 4, "query": "Explain gradient descent.", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": "spec example"}
+{"id": 5, "query": "Calculate 15% of 80", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 6, "query": "Is it raining in New York right now?", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 7, "query": "What's the latest news on OpenAI?", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 8, "query": "What is the square root of 144?", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 9, "query": "How hot is it in Dubai today?", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 10, "query": "Who is the current president of France?", "expected": "web_search", "acceptable": ["web_search", "direct"], "category": "clear", "note": "changes over time, so search is safest; a model answer is acceptable"}
+{"id": 11, "query": "2+2", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 12, "query": "Forecast for Tokyo this weekend", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 13, "query": "What's the price of Ethereum right now?", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 14, "query": "Look up the opening hours of the Louvre", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 15, "query": "Write a haiku about autumn", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 16, "query": "How does a hash map work?", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 17, "query": "Give me three tips for better sleep", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 18, "query": "How do I calculate compound interest?", "expected": "direct", "acceptable": ["direct"], "category": "overlap", "note": "conceptual question that mentions 'calculate'"}
+{"id": 19, "query": "What is the boiling point of water in Fahrenheit?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": "temperature word, but not weather"}
+{"id": 20, "query": "Write a haiku about rain", "expected": "direct", "acceptable": ["direct"], "category": "overlap", "note": "rain is a topic, not a forecast request"}
+{"id": 21, "query": "What's the temperature of the sun's surface?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": "temperature word, but not weather"}
+{"id": 22, "query": "What is the derivative of x squared?", "expected": "direct", "acceptable": ["direct"], "category": "overlap", "note": "symbolic math the calculator cannot do"}
+{"id": 23, "query": "Calculate the average yearly rainfall in Singapore", "expected": "web_search", "acceptable": ["web_search"], "category": "overlap", "note": "calculate + rainfall, but yearly averages must be looked up; the weather tool only serves current conditions"}
+{"id": 24, "query": "What's the capital of Australia?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": "stable fact the model knows"}
+{"id": 25, "query": "Convert 100 USD to SGD", "expected": "web_search", "acceptable": ["web_search"], "category": "overlap", "note": "needs a live exchange rate, not arithmetic"}
+{"id": 26, "query": "What is 10 degrees Celsius in Fahrenheit?", "expected": "calculator", "acceptable": ["calculator", "direct"], "category": "overlap", "note": "degrees word, but it is arithmetic"}
+{"id": 27, "query": "Which Python version introduced the walrus operator?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": "stable fact"}
+{"id": 28, "query": "How many seconds are in a day?", "expected": "calculator", "acceptable": ["calculator", "direct"], "category": "overlap", "note": "arithmetic phrased without operators"}
+{"id": 29, "query": "Is Python better than JavaScript for beginners?", "expected": "direct", "acceptable": ["direct"], "category": "overlap", "note": "opinion; 'better than' could look like a comparison lookup"}
+{"id": 30, "query": "What's the score of the Arsenal game?", "expected": "web_search", "acceptable": ["web_search"], "category": "overlap", "note": "'score' is a live fact, not arithmetic"}
+{"id": 31, "query": "Explain how weather forecasting models work", "expected": "direct", "acceptable": ["direct"], "category": "overlap", "note": "contains 'weather' and 'forecast' but asks for an explanation"}
+{"id": 32, "query": "Tell me about Singapore", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": "general knowledge"}
+{"id": 33, "query": "What's the weather?", "expected": "weather", "acceptable": ["weather", "clarify"], "category": "ambiguous", "note": "no location; either route to weather and let the tool ask, or clarify"}
+{"id": 34, "query": "How many days until Christmas?", "expected": "clarify", "acceptable": ["clarify", "web_search", "direct"], "category": "ambiguous", "note": "needs today's date; no tool has it, search is the closest"}
+{"id": 35, "query": "Temperature", "expected": "clarify", "acceptable": ["clarify", "weather"], "category": "ambiguous", "note": "single word"}
+{"id": 36, "query": "Is it a good day to go hiking in Vancouver?", "expected": "weather", "acceptable": ["weather", "clarify", "direct"], "category": "ambiguous", "note": "implicitly about weather"}
+{"id": 37, "query": "What's 5 plus the number of planets?", "expected": "direct", "acceptable": ["direct", "clarify"], "category": "ambiguous", "note": "arithmetic that needs world knowledge; the calculator cannot evaluate it"}
+{"id": 38, "query": "How much is it?", "expected": "clarify", "acceptable": ["clarify", "direct"], "category": "ambiguous", "note": "no referent"}
+{"id": 39, "query": "What's happening?", "expected": "clarify", "acceptable": ["clarify", "web_search", "direct"], "category": "ambiguous", "note": "no referent"}
+{"id": 40, "query": "What time is it in Tokyo?", "expected": "web_search", "acceptable": ["web_search", "clarify", "direct"], "category": "ambiguous", "note": "no tool fits exactly; search is the closest"}
+{"id": 41, "query": "Summarize the theory of relativity in two sentences", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 42, "query": "Draft a polite email declining a meeting", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 43, "query": "What is the difference between TCP and UDP?", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": "contains 'and'; must not be split into two steps"}
+{"id": 44, "query": "Translate 'thank you very much' to Japanese", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 45, "query": "Why do cats purr?", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 46, "query": "hello", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 47, "query": "What's the weather in Tokyo and what is 12 * 7?", "expected": "multi", "acceptable": ["multi"], "category": "multi", "steps": ["weather", "calculator"], "note": ""}
+{"id": 48, "query": "Who won the last F1 race and is it raining in Singapore?", "expected": "multi", "acceptable": ["multi"], "category": "multi", "steps": ["web_search", "weather"], "note": ""}
+{"id": 49, "query": "Calculate 45 * 3 and then explain what a prime number is", "expected": "multi", "acceptable": ["multi"], "category": "multi", "steps": ["calculator", "direct"], "note": ""}
+{"id": 50, "query": "Search for the latest Bitcoin price and calculate 0.5 * 60000", "expected": "multi", "acceptable": ["multi"], "category": "multi", "steps": ["web_search", "calculator"], "note": ""}

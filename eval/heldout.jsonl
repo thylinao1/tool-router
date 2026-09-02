@@ -1,0 +1,22 @@
+{"id": 1, "query": "What's 12 squared plus 7?", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 2, "query": "Will it be windy in Cape Town tomorrow?", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 3, "query": "Latest headlines about the Singapore general election", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 4, "query": "Explain the difference between supervised and unsupervised learning", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 5, "query": "How much is 250 divided by 4?", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 6, "query": "Do I need sunscreen in Bali this afternoon?", "expected": "weather", "acceptable": ["weather", "clarify"], "category": "ambiguous", "note": "implicit weather question"}
+{"id": 7, "query": "Who is the current UN Secretary-General?", "expected": "web_search", "acceptable": ["web_search", "direct"], "category": "clear", "note": ""}
+{"id": 8, "query": "Write a limerick about a cat", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 9, "query": "What is 3 to the power of 5?", "expected": "calculator", "acceptable": ["calculator"], "category": "clear", "note": ""}
+{"id": 10, "query": "Current temperature in Kuala Lumpur", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 11, "query": "What's trending on Twitter right now?", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 12, "query": "What does HTTP stand for?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": ""}
+{"id": 13, "query": "Is it cold enough to snow in Oslo tonight?", "expected": "weather", "acceptable": ["weather"], "category": "clear", "note": ""}
+{"id": 14, "query": "How many hours are in a week?", "expected": "calculator", "acceptable": ["calculator", "direct"], "category": "overlap", "note": ""}
+{"id": 15, "query": "What's the melting point of gold?", "expected": "direct", "acceptable": ["direct", "web_search"], "category": "overlap", "note": "temperature-like, not weather"}
+{"id": 16, "query": "Explain how a calculator computes square roots", "expected": "direct", "acceptable": ["direct"], "category": "overlap", "note": "mentions calculator and square roots"}
+{"id": 17, "query": "Find the cheapest flights from Singapore to Tokyo next month", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 18, "query": "Any idea?", "expected": "clarify", "acceptable": ["clarify", "direct"], "category": "ambiguous", "note": ""}
+{"id": 19, "query": "Check the forecast", "expected": "weather", "acceptable": ["weather", "clarify"], "category": "ambiguous", "note": "no location"}
+{"id": 20, "query": "Tell me a fun fact about octopuses", "expected": "direct", "acceptable": ["direct"], "category": "no_tool", "note": ""}
+{"id": 21, "query": "Stock price of Apple today", "expected": "web_search", "acceptable": ["web_search"], "category": "clear", "note": ""}
+{"id": 22, "query": "What's 20% of 150 and is it raining in Paris?", "expected": "multi", "acceptable": ["multi"], "category": "multi", "steps": ["calculator", "weather"], "note": ""}

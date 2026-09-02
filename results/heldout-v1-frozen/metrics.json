@@ -1,0 +1,234 @@
+{
+  "routers": [
+    {
+      "router": "rules",
+      "n": 22,
+      "accuracy_lenient": 0.9090909090909091,
+      "accuracy_strict": 0.8181818181818182,
+      "incorrect_tool_rate": 0.0,
+      "unnecessary_tool_rate": 0.0,
+      "missed_tool_rate": 0.09090909090909091,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.0,
+      "accuracy_by_category": {
+        "ambiguous": 0.6666666666666666,
+        "clear": 0.9090909090909091,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 1.0
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 8,
+          "accuracy": 1.0
+        },
+        "low (<0.5)": {
+          "n": 1,
+          "accuracy": 1.0
+        },
+        "mid (0.5-0.8)": {
+          "n": 13,
+          "accuracy": 0.8461538461538461
+        }
+      },
+      "paths": {
+        "rules": 22
+      },
+      "latency_ms": {
+        "mean": 0.024409090909090908,
+        "p50": 0.024,
+        "p95": 0.035,
+        "max": 0.036
+      },
+      "confusion": {
+        "calculator->calculator": 3,
+        "calculator->direct": 1,
+        "clarify->direct": 1,
+        "direct->direct": 6,
+        "multi->multi": 1,
+        "weather->direct": 1,
+        "weather->weather": 4,
+        "web_search->direct": 1,
+        "web_search->web_search": 4
+      }
+    },
+    {
+      "router": "embeddings",
+      "n": 22,
+      "accuracy_lenient": 0.8636363636363636,
+      "accuracy_strict": 0.8181818181818182,
+      "incorrect_tool_rate": 0.09090909090909091,
+      "unnecessary_tool_rate": 0.045454545454545456,
+      "missed_tool_rate": 0.0,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.0,
+      "accuracy_by_category": {
+        "ambiguous": 0.6666666666666666,
+        "clear": 0.9090909090909091,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 0.75
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 11,
+          "accuracy": 0.9090909090909091
+        },
+        "low (<0.5)": {
+          "n": 4,
+          "accuracy": 0.75
+        },
+        "mid (0.5-0.8)": {
+          "n": 7,
+          "accuracy": 0.8571428571428571
+        }
+      },
+      "paths": {
+        "embeddings": 22
+      },
+      "latency_ms": {
+        "mean": 6.049363636363636,
+        "p50": 5.849,
+        "p95": 6.375,
+        "max": 10.581
+      },
+      "confusion": {
+        "calculator->calculator": 4,
+        "clarify->web_search": 1,
+        "direct->calculator": 1,
+        "direct->direct": 4,
+        "direct->web_search": 1,
+        "multi->multi": 1,
+        "weather->weather": 5,
+        "web_search->weather": 1,
+        "web_search->web_search": 4
+      }
+    },
+    {
+      "router": "hybrid",
+      "n": 22,
+      "accuracy_lenient": 0.7727272727272727,
+      "accuracy_strict": 0.7727272727272727,
+      "incorrect_tool_rate": 0.0,
+      "unnecessary_tool_rate": 0.045454545454545456,
+      "missed_tool_rate": 0.045454545454545456,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.22727272727272727,
+      "accuracy_by_category": {
+        "ambiguous": 1.0,
+        "clear": 0.9090909090909091,
+        "multi": 1.0,
+        "no_tool": 0.6666666666666666,
+        "overlap": 0.25
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 11,
+          "accuracy": 0.9090909090909091
+        },
+        "low (<0.5)": {
+          "n": 4,
+          "accuracy": 0.25
+        },
+        "mid (0.5-0.8)": {
+          "n": 7,
+          "accuracy": 0.8571428571428571
+        }
+      },
+      "paths": {
+        "hybrid(rules)": 9,
+        "hybrid(agree)": 5,
+        "hybrid(embeddings)": 3,
+        "hybrid(clarify)": 5
+      },
+      "latency_ms": {
+        "mean": 3.567681818181818,
+        "p50": 5.365,
+        "p95": 5.746,
+        "max": 6.162
+      },
+      "confusion": {
+        "calculator->calculator": 4,
+        "clarify->clarify": 1,
+        "direct->calculator": 1,
+        "direct->clarify": 3,
+        "direct->direct": 2,
+        "multi->multi": 1,
+        "weather->weather": 5,
+        "web_search->clarify": 1,
+        "web_search->web_search": 4
+      }
+    }
+  ],
+  "end_to_end": {
+    "llm": "ollama",
+    "per_route": {
+      "calculator": {
+        "n": 5,
+        "total_ms": {
+          "mean": 840.8498,
+          "p50": 1.971,
+          "p95": 3238.991
+        },
+        "routing_ms_mean": 3.6796,
+        "tool_ms_mean": 0.5038,
+        "llm_ms_mean": 836.5264
+      },
+      "clarify": {
+        "n": 5,
+        "total_ms": {
+          "mean": 23.273600000000002,
+          "p50": 19.092,
+          "p95": 44.286
+        },
+        "routing_ms_mean": 23.227,
+        "tool_ms_mean": 0.0,
+        "llm_ms_mean": 0.0
+      },
+      "direct": {
+        "n": 2,
+        "total_ms": {
+          "mean": 2206.0285,
+          "p50": 1295.999,
+          "p95": 3116.058
+        },
+        "routing_ms_mean": 4.5905,
+        "tool_ms_mean": 0.0,
+        "llm_ms_mean": 2201.3075
+      },
+      "multi": {
+        "n": 1,
+        "total_ms": {
+          "mean": 0.379,
+          "p50": 0.379,
+          "p95": 0.379
+        },
+        "routing_ms_mean": 0.066,
+        "tool_ms_mean": 0.269,
+        "llm_ms_mean": 0.0
+      },
+      "weather": {
+        "n": 5,
+        "total_ms": {
+          "mean": 8.3574,
+          "p50": 7.029,
+          "p95": 22.018
+        },
+        "routing_ms_mean": 8.1806,
+        "tool_ms_mean": 0.1402,
+        "llm_ms_mean": 0.0
+      },
+      "web_search": {
+        "n": 4,
+        "total_ms": {
+          "mean": 8.15775,
+          "p50": 9.85,
+          "p95": 12.799
+        },
+        "routing_ms_mean": 7.976,
+        "tool_ms_mean": 0.151,
+        "llm_ms_mean": 0.0
+      }
+    }
+  }
+}

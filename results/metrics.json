@@ -1,0 +1,248 @@
+{
+  "dataset": "dataset.jsonl",
+  "runs": 5,
+  "llm": "ollama",
+  "routers": [
+    {
+      "router": "rules",
+      "n": 50,
+      "accuracy_lenient": 0.94,
+      "accuracy_strict": 0.8,
+      "incorrect_tool_rate": 0.02,
+      "unnecessary_tool_rate": 0.02,
+      "missed_tool_rate": 0.02,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.0,
+      "abstain_rate": 0.24,
+      "accuracy_by_category": {
+        "ambiguous": 0.875,
+        "clear": 1.0,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 0.8666666666666667
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 18,
+          "accuracy": 0.9444444444444444
+        },
+        "mid (0.5-0.8)": {
+          "n": 32,
+          "accuracy": 0.9375
+        }
+      },
+      "paths": {
+        "rules": 50
+      },
+      "latency_ms": {
+        "mean": 0.02172,
+        "p50": 0.023,
+        "p95": 0.036,
+        "max": 0.038
+      },
+      "confusion": {
+        "calculator->calculator": 5,
+        "calculator->direct": 1,
+        "clarify->direct": 3,
+        "clarify->weather": 1,
+        "direct->calculator": 1,
+        "direct->direct": 20,
+        "multi->multi": 4,
+        "weather->direct": 1,
+        "weather->weather": 5,
+        "web_search->calculator": 1,
+        "web_search->direct": 2,
+        "web_search->web_search": 6
+      }
+    },
+    {
+      "router": "embeddings",
+      "n": 50,
+      "accuracy_lenient": 0.7,
+      "accuracy_strict": 0.66,
+      "incorrect_tool_rate": 0.14,
+      "unnecessary_tool_rate": 0.14,
+      "missed_tool_rate": 0.0,
+      "multi_step_error_rate": 0.02,
+      "clarify_rate": 0.0,
+      "abstain_rate": 0.36,
+      "accuracy_by_category": {
+        "ambiguous": 0.625,
+        "clear": 0.9230769230769231,
+        "multi": 0.75,
+        "no_tool": 1.0,
+        "overlap": 0.3333333333333333
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 20,
+          "accuracy": 0.9
+        },
+        "low (<0.5)": {
+          "n": 5,
+          "accuracy": 0.8
+        },
+        "mid (0.5-0.8)": {
+          "n": 25,
+          "accuracy": 0.52
+        }
+      },
+      "paths": {
+        "embeddings": 50
+      },
+      "latency_ms": {
+        "mean": 5.9832,
+        "p50": 5.461,
+        "p95": 10.328,
+        "max": 10.487
+      },
+      "confusion": {
+        "calculator->calculator": 5,
+        "calculator->weather": 1,
+        "clarify->calculator": 1,
+        "clarify->weather": 2,
+        "clarify->web_search": 1,
+        "direct->calculator": 2,
+        "direct->direct": 14,
+        "direct->weather": 5,
+        "multi->multi": 4,
+        "weather->weather": 6,
+        "web_search->calculator": 1,
+        "web_search->weather": 3,
+        "web_search->web_search": 5
+      }
+    },
+    {
+      "router": "hybrid",
+      "n": 50,
+      "accuracy_lenient": 0.92,
+      "accuracy_strict": 0.88,
+      "incorrect_tool_rate": 0.04,
+      "unnecessary_tool_rate": 0.02,
+      "missed_tool_rate": 0.02,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.04,
+      "abstain_rate": 0.12,
+      "accuracy_by_category": {
+        "ambiguous": 0.75,
+        "clear": 1.0,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 0.8666666666666667
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 28,
+          "accuracy": 0.8928571428571429
+        },
+        "low (<0.5)": {
+          "n": 1,
+          "accuracy": 1.0
+        },
+        "mid (0.5-0.8)": {
+          "n": 21,
+          "accuracy": 0.9523809523809523
+        }
+      },
+      "paths": {
+        "hybrid(rules)": 19,
+        "hybrid(agree)": 9,
+        "hybrid(rules-after-abstain)": 7,
+        "hybrid(veto)": 6,
+        "hybrid(embeddings)": 4,
+        "hybrid(fallback)": 3,
+        "hybrid(clarify)": 2
+      },
+      "latency_ms": {
+        "mean": 3.48924,
+        "p50": 5.184,
+        "p95": 5.789,
+        "max": 6.234
+      },
+      "confusion": {
+        "calculator->calculator": 6,
+        "clarify->clarify": 2,
+        "clarify->direct": 1,
+        "clarify->weather": 1,
+        "direct->calculator": 1,
+        "direct->direct": 20,
+        "multi->multi": 4,
+        "weather->weather": 6,
+        "web_search->direct": 1,
+        "web_search->weather": 2,
+        "web_search->web_search": 6
+      }
+    }
+  ],
+  "end_to_end": {
+    "llm": "ollama",
+    "per_route": {
+      "calculator": {
+        "n": 7,
+        "total_ms": {
+          "mean": 517.381,
+          "p50": 51.317,
+          "p95": 1603.751
+        },
+        "routing_ms_mean": 13.878714285714285,
+        "tool_ms_mean": 1.1717142857142857,
+        "llm_ms_mean": 501.803
+      },
+      "clarify": {
+        "n": 2,
+        "total_ms": {
+          "mean": 21.0685,
+          "p50": 14.926,
+          "p95": 27.211
+        },
+        "routing_ms_mean": 20.998,
+        "tool_ms_mean": 0.0,
+        "llm_ms_mean": 0.0
+      },
+      "direct": {
+        "n": 22,
+        "total_ms": {
+          "mean": 2238.794272727273,
+          "p50": 2314.946,
+          "p95": 3423.236
+        },
+        "routing_ms_mean": 17.189045454545454,
+        "tool_ms_mean": 0.0,
+        "llm_ms_mean": 2221.360681818182
+      },
+      "multi": {
+        "n": 4,
+        "total_ms": {
+          "mean": 713.7745,
+          "p50": 5.359,
+          "p95": 2848.723
+        },
+        "routing_ms_mean": 53.317,
+        "tool_ms_mean": 1.37975,
+        "llm_ms_mean": 658.93575
+      },
+      "weather": {
+        "n": 9,
+        "total_ms": {
+          "mean": 45.373666666666665,
+          "p50": 8.705,
+          "p95": 339.823
+        },
+        "routing_ms_mean": 45.06955555555555,
+        "tool_ms_mean": 0.2618888888888889,
+        "llm_ms_mean": 0.0
+      },
+      "web_search": {
+        "n": 6,
+        "total_ms": {
+          "mean": 6.322166666666667,
+          "p50": 0.175,
+          "p95": 24.51
+        },
+        "routing_ms_mean": 6.1905,
+        "tool_ms_mean": 0.10366666666666667,
+        "llm_ms_mean": 0.0
+      }
+    }
+  }
+}
