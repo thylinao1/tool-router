@@ -38,10 +38,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.222
+        "latency_ms": 0.389
       },
       "answer": "12 **2 + 7 = 151",
-      "tool_ms": 2.727,
+      "tool_ms": 3.464,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -49,10 +49,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "12 **2 + 7 = 151",
   "latency_ms": {
-    "routing": 0.222,
-    "tool": 2.727,
+    "routing": 0.389,
+    "tool": 3.464,
     "llm": 0.0,
-    "total": 3.2
+    "total": 4.001
   },
   "fallback": false,
   "llm": "ollama"
@@ -95,10 +95,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.121
+        "latency_ms": 0.126
       },
       "answer": "Weather in Cape Town: 23°C, sunny, humidity 78% (mock data)",
-      "tool_ms": 0.09,
+      "tool_ms": 0.125,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -106,10 +106,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "Weather in Cape Town: 23°C, sunny, humidity 78% (mock data)",
   "latency_ms": {
-    "routing": 0.121,
-    "tool": 0.09,
+    "routing": 0.126,
+    "tool": 0.125,
     "llm": 0.0,
-    "total": 0.295
+    "total": 0.309
   },
   "fallback": false,
   "llm": "ollama"
@@ -152,10 +152,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 19.195
+        "latency_ms": 22.47
       },
       "answer": "Top result for 'Latest headlines about the Singapore general election' (mock search): no canned snippet; a real engine would return live pages here.",
-      "tool_ms": 0.602,
+      "tool_ms": 0.552,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -163,10 +163,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "Top result for 'Latest headlines about the Singapore general election' (mock search): no canned snippet; a real engine would return live pages here.",
   "latency_ms": {
-    "routing": 19.195,
-    "tool": 0.602,
+    "routing": 22.47,
+    "tool": 0.552,
     "llm": 0.0,
-    "total": 19.849
+    "total": 23.075
   },
   "fallback": false,
   "llm": "ollama"
@@ -212,21 +212,21 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
           "weather"
         ],
         "abstained": false,
-        "latency_ms": 11.966
+        "latency_ms": 13.508
       },
-      "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, and the goal is to learn a mapping between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the goal is to identify patterns, relationships, or structure in the data. Supervised learning typically results in more accurate models, but requires more data and labeled examples, while unsupervised learning can be more flexible and adaptable to new data. Unsupervised learning often relies on clustering, dimensionality reduction, or anomaly detection techniques.",
+      "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, to learn the relationship between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the model must identify patterns or structure on its own. Supervised learning aims to minimize the error between predicted and actual outputs, while unsupervised learning aims to discover hidden patterns or relationships in the data. This fundamental difference in approach enables supervised learning to make precise predictions and unsupervised learning to uncover underlying structures.",
       "tool_ms": 0.0,
-      "llm_ms": 3265.735,
+      "llm_ms": 3043.015,
       "fallback": false,
       "asked_by": null
     }
   ],
-  "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, and the goal is to learn a mapping between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the goal is to identify patterns, relationships, or structure in the data. Supervised learning typically results in more accurate models, but requires more data and labeled examples, while unsupervised learning can be more flexible and adaptable to new data. Unsupervised learning often relies on clustering, dimensionality reduction, or anomaly detection techniques.",
+  "answer": "Supervised learning involves training a model on labeled data, where the correct output is already known, to learn the relationship between inputs and outputs. In contrast, unsupervised learning involves training a model on unlabeled data, where the model must identify patterns or structure on its own. Supervised learning aims to minimize the error between predicted and actual outputs, while unsupervised learning aims to discover hidden patterns or relationships in the data. This fundamental difference in approach enables supervised learning to make precise predictions and unsupervised learning to uncover underlying structures.",
   "latency_ms": {
-    "routing": 11.966,
+    "routing": 13.508,
     "tool": 0.0,
-    "llm": 3265.735,
-    "total": 3277.967
+    "llm": 3043.015,
+    "total": 3056.654
   },
   "fallback": false,
   "llm": "ollama"
@@ -247,7 +247,7 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
       "decision": {
         "route": "direct",
         "confidence": 0.443,
-        "reason": "ambiguous, answering directly (no router had any signal): rules chose direct (0.50), embeddings chose direct (0.44); top candidates direct and web_search are too close",
+        "reason": "ambiguous, answering directly (neither router had any signal): rules chose direct (0.50), embeddings chose direct (0.44); top candidates direct and web_search are too close",
         "router": "hybrid(fallback)",
         "candidates": [
           [
@@ -269,21 +269,21 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": true,
-        "latency_ms": 13.435
+        "latency_ms": 23.092
       },
-      "answer": "Octopuses have three hearts, two of which pump blood to their gills, while the third pumps blood to the rest of their body. This unique circulatory system allows them to efficiently pump blood to their entire body, including their arms, which require a constant supply of oxygen. Octopuses also have blue blood, which is more efficient at transporting oxygen in cold water. This adaptation helps them thrive in their underwater environment.",
+      "answer": "Octopuses have three hearts, which pump blue-green blood through their bodies. Two of the hearts are branchial hearts that pump blood to their gills, while the third is a systemic heart that pumps blood to the rest of their body. This unique circulatory system allows them to efficiently oxygenate their bodies while also conserving energy. This adaptation is crucial for their ability to change color and texture to blend in with their surroundings.",
       "tool_ms": 0.0,
-      "llm_ms": 2510.796,
+      "llm_ms": 2479.31,
       "fallback": false,
       "asked_by": null
     }
   ],
-  "answer": "Octopuses have three hearts, two of which pump blood to their gills, while the third pumps blood to the rest of their body. This unique circulatory system allows them to efficiently pump blood to their entire body, including their arms, which require a constant supply of oxygen. Octopuses also have blue blood, which is more efficient at transporting oxygen in cold water. This adaptation helps them thrive in their underwater environment.",
+  "answer": "Octopuses have three hearts, which pump blue-green blood through their bodies. Two of the hearts are branchial hearts that pump blood to their gills, while the third is a systemic heart that pumps blood to the rest of their body. This unique circulatory system allows them to efficiently oxygenate their bodies while also conserving energy. This adaptation is crucial for their ability to change color and texture to blend in with their surroundings.",
   "latency_ms": {
-    "routing": 13.435,
+    "routing": 23.092,
     "tool": 0.0,
-    "llm": 2510.796,
-    "total": 2524.394
+    "llm": 2479.31,
+    "total": 2502.467
   },
   "fallback": false,
   "llm": "ollama"

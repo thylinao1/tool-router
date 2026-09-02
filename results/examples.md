@@ -38,10 +38,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 2.177
+        "latency_ms": 0.54
       },
       "answer": "245 * 18 = 4410",
-      "tool_ms": 7.014,
+      "tool_ms": 3.955,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -49,10 +49,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "245 * 18 = 4410",
   "latency_ms": {
-    "routing": 2.177,
-    "tool": 7.014,
+    "routing": 0.54,
+    "tool": 3.955,
     "llm": 0.0,
-    "total": 12.307
+    "total": 5.391
   },
   "fallback": false,
   "llm": "ollama"
@@ -95,10 +95,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 339.727
+        "latency_ms": 591.014
       },
       "answer": "Weather in Singapore: 31°C, thunderstorms, humidity 78% (mock data)",
-      "tool_ms": 0.044,
+      "tool_ms": 0.037,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -106,10 +106,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "Weather in Singapore: 31°C, thunderstorms, humidity 78% (mock data)",
   "latency_ms": {
-    "routing": 339.727,
-    "tool": 0.044,
+    "routing": 591.014,
+    "tool": 0.037,
     "llm": 0.0,
-    "total": 339.823
+    "total": 591.103
   },
   "fallback": false,
   "llm": "ollama"
@@ -152,10 +152,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.054
+        "latency_ms": 0.055
       },
       "answer": "Top result for 'Who won the latest Formula 1 race?' (mock search): Formula 1: the most recent Grand Prix was won by the driver starting from pole; full results on formula1.com.",
-      "tool_ms": 0.105,
+      "tool_ms": 0.1,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -163,10 +163,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "Top result for 'Who won the latest Formula 1 race?' (mock search): Formula 1: the most recent Grand Prix was won by the driver starting from pole; full results on formula1.com.",
   "latency_ms": {
-    "routing": 0.054,
-    "tool": 0.105,
+    "routing": 0.055,
+    "tool": 0.1,
     "llm": 0.0,
-    "total": 0.175
+    "total": 0.172
   },
   "fallback": false,
   "llm": "ollama"
@@ -212,21 +212,21 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
           "weather"
         ],
         "abstained": false,
-        "latency_ms": 8.803
+        "latency_ms": 10.189
       },
-      "answer": "Gradient descent is an optimization algorithm used to minimize the loss function of a machine learning model. It iteratively updates the model's parameters in the direction of the negative gradient of the loss function, which indicates the direction of steepest descent. The algorithm starts with an initial guess for the parameters and iteratively applies the update rule until convergence or a stopping criterion is met. By iteratively moving in the direction of the negative gradient, gradient descent can find the optimal values of the parameters that minimize the loss function.",
+      "answer": "Gradient descent is an optimization algorithm used to minimize the cost function of a machine learning model. It iteratively updates the model's parameters in the direction of the negative gradient of the cost function, which is a measure of how well the model is performing. The update rule is typically given by: `w_new = w_old - α * ∇(cost function)`, where `α` is the learning rate and `w_old` is the previous parameter value. By iteratively applying this update rule, the model's parameters converge to a minimum of the cost function.",
       "tool_ms": 0.0,
-      "llm_ms": 3132.913,
+      "llm_ms": 3569.359,
       "fallback": false,
       "asked_by": null
     }
   ],
-  "answer": "Gradient descent is an optimization algorithm used to minimize the loss function of a machine learning model. It iteratively updates the model's parameters in the direction of the negative gradient of the loss function, which indicates the direction of steepest descent. The algorithm starts with an initial guess for the parameters and iteratively applies the update rule until convergence or a stopping criterion is met. By iteratively moving in the direction of the negative gradient, gradient descent can find the optimal values of the parameters that minimize the loss function.",
+  "answer": "Gradient descent is an optimization algorithm used to minimize the cost function of a machine learning model. It iteratively updates the model's parameters in the direction of the negative gradient of the cost function, which is a measure of how well the model is performing. The update rule is typically given by: `w_new = w_old - α * ∇(cost function)`, where `α` is the learning rate and `w_old` is the previous parameter value. By iteratively applying this update rule, the model's parameters converge to a minimum of the cost function.",
   "latency_ms": {
-    "routing": 8.803,
+    "routing": 10.189,
     "tool": 0.0,
-    "llm": 3132.913,
-    "total": 3142.077
+    "llm": 3569.359,
+    "total": 3579.942
   },
   "fallback": false,
   "llm": "ollama"
@@ -271,21 +271,21 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
           "weather"
         ],
         "abstained": false,
-        "latency_ms": 0.038
+        "latency_ms": 0.171
       },
       "answer": "Raindrops on my face\nCooling skin with gentle touch\nNature's soothing song",
       "tool_ms": 0.0,
-      "llm_ms": 648.421,
+      "llm_ms": 587.411,
       "fallback": false,
       "asked_by": null
     }
   ],
   "answer": "Raindrops on my face\nCooling skin with gentle touch\nNature's soothing song",
   "latency_ms": {
-    "routing": 0.038,
+    "routing": 0.171,
     "tool": 0.0,
-    "llm": 648.421,
-    "total": 648.604
+    "llm": 587.411,
+    "total": 587.75
   },
   "fallback": false,
   "llm": "ollama"
@@ -328,7 +328,7 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 27.117
+        "latency_ms": 22.731
       },
       "answer": "I can help with that, but I am not sure whether you want a weather report for a location or a web search for current information. Which one did you mean?",
       "tool_ms": 0.0,
@@ -339,10 +339,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "I can help with that, but I am not sure whether you want a weather report for a location or a web search for current information. Which one did you mean?",
   "latency_ms": {
-    "routing": 27.117,
+    "routing": 22.731,
     "tool": 0.0,
     "llm": 0.0,
-    "total": 27.211
+    "total": 23.054
   },
   "fallback": false,
   "llm": "ollama"
@@ -385,10 +385,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.055
+        "latency_ms": 0.026
       },
       "answer": "Which location would you like the weather for?",
-      "tool_ms": 0.035,
+      "tool_ms": 0.021,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": "tool"
@@ -396,10 +396,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "Which location would you like the weather for?",
   "latency_ms": {
-    "routing": 0.055,
-    "tool": 0.035,
+    "routing": 0.026,
+    "tool": 0.021,
     "llm": 0.0,
-    "total": 0.117
+    "total": 0.062
   },
   "fallback": false,
   "llm": "ollama"
@@ -420,7 +420,7 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
       "decision": {
         "route": "direct",
         "confidence": 0.5,
-        "reason": "ambiguous, answering directly (no router had any signal): rules chose direct (0.50), embeddings chose web_search (0.50); top candidates web_search and weather are too close",
+        "reason": "ambiguous, answering directly (neither router had any signal): rules chose direct (0.50), embeddings chose web_search (0.50); top candidates web_search and weather are too close",
         "router": "hybrid(fallback)",
         "candidates": [
           [
@@ -442,21 +442,21 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": true,
-        "latency_ms": 10.47
+        "latency_ms": 11.512
       },
-      "answer": "I'm here to assist you with any questions or information you need. I'm a concise assistant, providing brief and accurate responses. Please feel free to ask me anything, and I'll do my best to help. What's on your mind?",
+      "answer": "I'm here to provide information and assist with your questions. I'm a concise assistant, and I'll do my best to provide clear and concise answers. What's on your mind, and how can I help you today?",
       "tool_ms": 0.0,
-      "llm_ms": 1694.802,
+      "llm_ms": 1478.071,
       "fallback": false,
       "asked_by": null
     }
   ],
-  "answer": "I'm here to assist you with any questions or information you need. I'm a concise assistant, providing brief and accurate responses. Please feel free to ask me anything, and I'll do my best to help. What's on your mind?",
+  "answer": "I'm here to provide information and assist with your questions. I'm a concise assistant, and I'll do my best to provide clear and concise answers. What's on your mind, and how can I help you today?",
   "latency_ms": {
-    "routing": 10.47,
+    "routing": 11.512,
     "tool": 0.0,
-    "llm": 1694.802,
-    "total": 1705.412
+    "llm": 1478.071,
+    "total": 1490.191
   },
   "fallback": false,
   "llm": "ollama"
@@ -500,10 +500,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.272
+        "latency_ms": 0.089
       },
       "answer": "Weather in Tokyo: 26°C, partly cloudy, humidity 60% (mock data)",
-      "tool_ms": 0.046,
+      "tool_ms": 0.14,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -535,10 +535,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
         ],
         "vetoed": [],
         "abstained": false,
-        "latency_ms": 0.034
+        "latency_ms": 0.049
       },
       "answer": "12 * 7 = 84",
-      "tool_ms": 4.879,
+      "tool_ms": 5.207,
       "llm_ms": 0.0,
       "fallback": false,
       "asked_by": null
@@ -546,10 +546,10 @@ Full traces from `Assistant.handle()` with the hybrid router (LLM = ollama).
   ],
   "answer": "Weather in Tokyo: 26°C, partly cloudy, humidity 60% (mock data)\n12 * 7 = 84",
   "latency_ms": {
-    "routing": 0.306,
-    "tool": 4.925,
+    "routing": 0.138,
+    "tool": 5.347,
     "llm": 0.0,
-    "total": 5.359
+    "total": 5.724
   },
   "fallback": false,
   "llm": "ollama"

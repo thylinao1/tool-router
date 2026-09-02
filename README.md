@@ -7,21 +7,75 @@ native tool calling, without function-calling APIs, and without any prompt
 whose purpose is to output a tool name. The LLM is used only to generate
 answers.
 
-Three routers are implemented and compared on the same evaluation set:
+## Example
+
+```
+$ .venv/bin/python cli.py --no-llm "Is it raining in New York right now?"
+```
+
+```json
+{
+  "routes": ["weather"],
+  "decision": {
+    "route": "weather",
+    "confidence": 0.82,
+    "reason": "rules (0.65) and embeddings (0.99) both chose weather",
+    "router": "hybrid(agree)",
+    "candidates": [["weather", 0.685], ["web_search", 0.301], ["direct", 0.19], ["calculator", 0.111]]
+  },
+  "answer": "Weather in New York: 22°C, clear, humidity 45% (mock data)",
+  "latency_ms": {"routing": 7.7, "tool": 0.02, "llm": 0.0, "total": 7.7}
+}
+```
+
+The rule router matched the weather vocabulary but also a time phrase, so its
+confidence (0.65) was below the fast-path threshold; the embedding router was
+called, agreed, and the decision records both scores. The weather tool then
+answered in under a millisecond. When neither router is confident and a tool is
+the leading candidate, the assistant asks instead of guessing:
+
+```
+$ .venv/bin/python cli.py --no-llm "How much is it?"
+```
+
+```json
+{
+  "routes": ["clarify"],
+  "decision": {
+    "route": "clarify",
+    "confidence": 0.529,
+    "reason": "rules chose direct (0.50), embeddings chose calculator (0.53); top candidates calculator and web_search are too close",
+    "router": "hybrid(clarify)"
+  },
+  "answer": "I can help with that, but I am not sure whether you want a calculation or a web search for current information. Which one did you mean?"
+}
+```
+
+(Output trimmed to the fields discussed; the full trace also carries per-step
+timings, vetoed routes and the abstain flag.)
+
+## Routers
+
+Four routers are implemented and compared on the same evaluation set. The
+hybrid can use either learned router as its second opinion:
 
 | Router | Mechanism | Median latency | Accuracy |
 |---|---|---|---|
 | `rules` | weighted regular-expression rules per route, combined with noisy-OR | 0.02 ms | 94.0% lenient, 80.0% strict |
 | `embeddings` | nearest labelled examples with `all-MiniLM-L6-v2` | 5 ms | 70.0% lenient, 66.0% strict |
+| `classifier` | logistic regression over the same embeddings, trained on labelled queries | 5 ms | 88.0% lenient, 80.0% strict |
 | `hybrid` | rules first, embeddings as a second opinion, explicit `clarify` decision | 5 ms | 92.0% lenient, 88.0% strict |
+| `hybrid-clf` | rules first, classifier as the second opinion | H5 ms | H88.0% lenient, 80.0% strict |
 
-On this set the rule router scores one query higher than the hybrid on lenient
-accuracy; the same person wrote the rules and the evaluation set, which favours
-the rules. The hybrid scores higher on strict accuracy and on both held-out
-sets. On the first held-out set the frozen system scored 77.3%, which revealed
-a flaw in the ambiguity policy. After that one change, a second held-out set
-(a slot-by-slot paraphrase of the first) scored 100.0%. The Evaluation section
-gives the details and the caveats.
+The rule router scores well on this set partly because the same person wrote
+the rules and the evaluation set. Replacing nearest-prototype scoring with a
+classifier trained on 307 labelled queries raises the learned router from
+70.0% to 88.0%, and the hybrid built on it is the best configuration on every
+set: 94.0% lenient here, 100.0% and 100.0% on the two held-out sets (95.5% and
+90.9% strict). The first held-out run, against the frozen system, scored 77.3%
+and revealed a flaw in the ambiguity policy; the second held-out set is a
+slot-by-slot paraphrase of the first. The Evaluation section gives the details
+and the caveats.
 
 Full tables, per-query predictions and error lists are in [`results/results.md`](results/results.md).
 Example traces are in [`results/examples.md`](results/examples.md).
@@ -36,6 +90,8 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python cli.py --decision-only "Write a haiku about rain"
 .venv/bin/python cli.py --router rules "Who won the latest Formula 1 race?"
 .venv/bin/python cli.py --on-ambiguous direct "How much is it?"     # answer instead of asking
+.venv/bin/python cli.py --router classifier "How many seconds are in a day?"
+.venv/bin/python cli.py --router hybrid-clf "What time is it in Tokyo?"
 
 # tests and evaluation
 .venv/bin/python -m pytest -q
@@ -44,7 +100,8 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m eval.run_eval --dataset eval/heldout2.jsonl --out results/heldout2
 ```
 
-The first run downloads the sentence-transformer model (about 90 MB). The
+The first run downloads the sentence-transformer model (about 90 MB);
+scikit-learn is used only for the classifier router. The
 tools are mocked: the calculator evaluates real arithmetic in a restricted
 parser, the weather tool returns fixed conditions for ten cities and
 deterministic pseudo-data elsewhere, and web search returns fixed snippets.
@@ -148,10 +205,46 @@ vetoes weather. This is the general pattern in the results: embeddings
 generalise to paraphrase but respond to surface topic, while rules are
 precise but cover only the phrasings that were written down.
 
-### Router 3: hybrid
+### Router 3: classifier
 
-`HybridRouter` runs the rules first and calls the embedding model only when
-the rules are not confident. The decision procedure, in order:
+`ClassifierRouter` uses the same MiniLM embedding as input to a logistic
+regression (scikit-learn, balanced class weights). It is trained on
+`eval/train.jsonl`, 307 labelled queries written for training and kept
+disjoint from every evaluation set, plus the registry examples. Confidence is
+the predicted probability of the top route, and a probability below 0.5 marks
+the decision as abstained, so the hybrid can use this router in place of the
+embedding router without any other change (`HybridRouter(rules, classifier)`,
+reported as `hybrid-clf`).
+
+The difference from the embedding router is what the model learns: nearest
+prototypes reward surface similarity, so a place name pulls a query toward
+weather; a linear model fitted to labelled queries, including ones written as
+traps (a place name inside a general question, "calculate" inside an
+explanation request), can weight those features down.
+
+Examples from the evaluation set, embedding router against classifier (route
+and confidence):
+
+| Query | Embeddings | Classifier |
+|---|---|---|
+| Look up the opening hours of the Louvre | weather 0.50 | web_search 0.41 |
+| Write a haiku about rain | weather 0.53 | direct 0.60 |
+| Explain how weather forecasting models work | weather 0.76 | direct 0.58 |
+| What's the temperature of the sun's surface? | weather 0.76 | direct 0.38 |
+| Tell me about Singapore | weather 0.39 | direct 0.44 |
+| What time is it in Tokyo? | weather 0.87 | weather 0.36 (abstains) |
+| How do I calculate compound interest? | calculator 0.50 | calculator 0.59 |
+
+The classifier corrects the place-name errors and, where it is still wrong,
+is usually uncertain enough to abstain, which lets the hybrid fall back to a
+direct answer. It remains vulnerable to "calculate" in conceptual questions,
+where the rule exclusion is what the hybrid relies on.
+
+### Router 4: hybrid
+
+`HybridRouter` runs the rules first and calls the second router (embeddings
+by default, or the classifier) only when the rules are not confident. The
+decision procedure, in order:
 
 1. Rules confident (`>= 0.8`) and not abstained: take the rule decision. No embedding call.
 2. Embeddings selected a route that a rule vetoed: take the rule decision. A veto overrides the embedding choice.
@@ -186,6 +279,11 @@ On the 50-query set the paths divide as follows: 19 queries were resolved
 without calling the embedding model (step 1), 9 were agreements, 7 fell back
 to rules after the encoder abstained (step 3), 6 were vetoes, 4 were embedding
 decisions, 3 were low-confidence direct answers and 2 were clarifications.
+With the classifier as the second router (`hybrid-clf`): 19 on the rule path,
+15 agreements, 6 low-confidence direct answers, 4 rules after abstention,
+3 clarifications, 2 classifier decisions and 1 veto. The classifier
+agrees with the rules more often than the prototypes do, so fewer queries
+reach the ambiguous branch.
 
 ### The structured decision
 
@@ -302,6 +400,15 @@ mirrors the first set slot by slot (same category and label shape per
 position, paraphrased queries), so it measures whether the iteration-4 change
 holds up under paraphrase; it is not an independent sample of new traffic.
 
+### Independent labelling set
+
+`eval/independent/to_label.jsonl` contains 60 queries written in the voice
+of two different users by people other than the author of the routers, with no
+labels. `eval/independent/LABELLING.md` explains how to label them
+independently and how to score the result. Labelling is in progress; when the
+labelled file exists the evaluator scores it with the same metrics and writes
+`results/independent/`.
+
 ### Metrics
 
 All rates use the full dataset size as the denominator.
@@ -330,6 +437,8 @@ Routing quality on the 50-query set:
 | rules | 94.0% | 80.0% | 2.0% | 2.0% | 2.0% | 0.0% | 24.0% |
 | embeddings | 70.0% | 66.0% | 14.0% | 14.0% | 0.0% | 0.0% | 36.0% |
 | hybrid | 92.0% | 88.0% | 4.0% | 2.0% | 2.0% | 4.0% | 12.0% |
+| classifier | 88.0% | 80.0% | 8.0% | 4.0% | 0.0% | 0.0% | 24.0% |
+| hybrid-clf | 94.0% | 88.0% | 2.0% | 2.0% | 2.0% | 6.0% | 12.0% |
 
 The hybrid's higher strict accuracy comes from the ambiguous category: the
 rule router has no way to express uncertainty, so each ambiguous item it
@@ -339,7 +448,28 @@ Tokyo?"` and `"Calculate the average yearly rainfall in Singapore"` to
 weather), one unnecessary tool (`"What's 5 plus the number of planets?"` to
 the calculator, which then fails and falls back to the LLM) and one missed
 tool (`"Convert 100 USD to SGD"` answered directly, where the live rate
-required a search).
+required a search). `hybrid-clf` has three errors: the rainfall query goes to
+the calculator instead, the currency conversion becomes a clarification, and
+the planets query still goes to the calculator.
+
+### Confidence calibration
+
+Lenient accuracy by confidence bucket on the 50-query set (n in brackets):
+
+| Confidence bucket | rules | embeddings | hybrid | classifier | hybrid-clf |
+|---|---|---|---|---|---|
+| low (<0.5) | n=0 | 80.0% (n=5) | 100.0% (n=1) | 75.0% (n=12) | 100.0% (n=5) |
+| mid (0.5-0.8) | 93.8% (n=32) | 52.0% (n=25) | 95.2% (n=21) | 89.3% (n=28) | 92.3% (n=26) |
+| high (>=0.8) | 94.4% (n=18) | 90.0% (n=20) | 89.3% (n=28) | 100.0% (n=10) | 94.7% (n=19) |
+
+For the embedding router, confidence separates the reliable decisions from
+the unreliable ones: 90% accuracy above 0.8 against 52% in the middle bucket.
+The classifier is close to monotone (75%, 89%, 100%), which is what a
+threshold-based policy needs. The rule router's confidence carries little
+information: its middle bucket is mostly the 0.5 no-signal default, and its
+accuracy there is the same as in the high bucket. The hybrids compress the
+range because they only pass a decision through when some router was
+confident, so their buckets are all above 89%.
 
 The embedding router's errors are almost all of one kind: a query that
 mentions a place or a temperature-related word is drawn to weather, and a
@@ -366,6 +496,8 @@ examined, not a held-out score:
 | rules | 90.9% | 81.8% | 0.0% | 0.0% | 9.1% | 0.0% | 31.8% |
 | embeddings | 86.4% | 81.8% | 9.1% | 4.5% | 0.0% | 0.0% | 27.3% |
 | hybrid | 95.5% | 90.9% | 0.0% | 0.0% | 4.5% | 0.0% | 22.7% |
+| classifier | 90.9% | 90.9% | 4.5% | 4.5% | 0.0% | 0.0% | 22.7% |
+| hybrid-clf | 100.0% | 95.5% | 0.0% | 0.0% | 0.0% | 0.0% | 9.1% |
 
 The second held-out set was written after that change and run once against
 the final system. It mirrors the first set slot by slot, so it contains a
@@ -377,6 +509,8 @@ the change generalises across phrasing rather than sampling new queries:
 | rules | 90.9% | 77.3% | 0.0% | 0.0% | 9.1% | 0.0% | 31.8% |
 | embeddings | 81.8% | 77.3% | 4.5% | 13.6% | 0.0% | 0.0% | 36.4% |
 | hybrid | 100.0% | 90.9% | 0.0% | 0.0% | 0.0% | 0.0% | 18.2% |
+| classifier | 95.5% | 86.4% | 0.0% | 4.5% | 0.0% | 0.0% | 13.6% |
+| hybrid-clf | 100.0% | 90.9% | 0.0% | 0.0% | 0.0% | 0.0% | 13.6% |
 
 The hybrid's two strict misses on the second set are the two ambiguous items
 where `clarify` was the primary label and a direct answer was acceptable
@@ -384,7 +518,9 @@ where `clarify` was the primary label and a direct answer was acceptable
 that contain no trigger word (`"Will it be foggy at Heathrow tomorrow
 morning?"`, `"Which movies are showing in Singapore cinemas this weekend?"`);
 the embedding router sent `"Proofread this sentence: their going to the park"`
-to weather. The hybrid recovered all of these cases.
+to weather. Both hybrids recovered all of these cases; `hybrid-clf` has no
+errors on either held-out set, and the classifier alone misses only the
+"explain ... calculator" items.
 
 ### Latency
 
@@ -392,27 +528,32 @@ Router latency in isolation (median of 5 calls per query, after warm-up, Apple M
 
 | Router | mean | p50 | p95 | max |
 |---|---|---|---|---|
-| rules | 0.022 | 0.023 | 0.036 | 0.038 |
-| embeddings | 5.983 | 5.461 | 10.328 | 10.487 |
-| hybrid | 3.489 | 5.184 | 5.789 | 6.234 |
+| rules | 0.022 | 0.023 | 0.037 | 0.041 |
+| embeddings | 5.764 | 5.285 | 10.250 | 10.720 |
+| hybrid | 3.476 | 5.180 | 5.757 | 6.239 |
+| classifier | 5.880 | 5.379 | 10.716 | 10.928 |
+| hybrid-clf | 4.026 | 5.374 | 7.214 | 18.231 |
+
+The classifier adds a matrix product to the encoder call, so its cost is the
+same as the embedding router's to within measurement noise.
 
 The hybrid's mean is below the embedding router's because 19 of 50 queries
 (38.0%) resolve on the rule fast path without calling the encoder.
 
-End-to-end latency per route, hybrid router, local `llama3.2:3b` through Ollama:
+End-to-end latency per route, default hybrid router, local `llama3.2:3b` through Ollama:
 
 | Route | n | total mean | total p50 | total p95 | routing | tool | LLM |
 |---|---|---|---|---|---|---|---|
-| calculator | 7 | 517.4 | 51.3 | 1603.8 | 13.9 | 1.17 | 501.8 |
-| clarify | 2 | 21.1 | 14.9 | 27.2 | 21.0 | 0.00 | 0.0 |
-| direct | 22 | 2238.8 | 2314.9 | 3423.2 | 17.2 | 0.00 | 2221.4 |
-| multi | 4 | 713.8 | 5.4 | 2848.7 | 53.3 | 1.38 | 658.9 |
-| weather | 9 | 45.4 | 8.7 | 339.8 | 45.1 | 0.26 | 0.0 |
-| web_search | 6 | 6.3 | 0.2 | 24.5 | 6.2 | 0.10 | 0.0 |
+| calculator | 7 | 511.1 | 43.7 | 1617.7 | 15.3 | 1.21 | 494.4 |
+| clarify | 2 | 21.6 | 20.2 | 23.1 | 21.4 | 0.00 | 0.0 |
+| direct | 22 | 2171.0 | 2114.0 | 3579.9 | 15.8 | 0.00 | 2155.0 |
+| multi | 4 | 538.7 | 5.7 | 2146.8 | 6.2 | 1.68 | 530.6 |
+| weather | 9 | 75.3 | 9.8 | 591.1 | 74.9 | 0.37 | 0.0 |
+| web_search | 6 | 6.7 | 0.2 | 23.0 | 6.6 | 0.13 | 0.0 |
 
 Three observations follow from this table.
 
-* The LLM accounts for most of the time. A direct answer takes about 2.3 s on
+* The LLM accounts for most of the time. A direct answer takes about 2.1 s on
   this laptop; a weather or search route answers in about 10 ms. Routing cost
   is small relative to either. With real tools behind the mocks (200 to 800 ms
   per call), the router's own speed matters less than avoiding unnecessary
@@ -421,10 +562,10 @@ Three observations follow from this table.
   (`"What is 10 degrees Celsius in Fahrenheit?"`, `"How many seconds are in a
   day?"`, `"What's 5 plus the number of planets?"`) had no parseable
   expression, so the assistant fell back to the LLM. The calculator's p50 of
-  51 ms is the cost of the tool path itself; the mean of 517 ms reflects the
+  44 ms is the cost of the tool path itself; the mean of 511 ms reflects the
   tool's limited scope.
 * Embedding calls are slower immediately after an LLM call. On the shared CPU,
-  encoder routing took a median of 23 ms when the previous query had run the
+  encoder routing took a median of 26 ms when the previous query had run the
   LLM and 10 ms otherwise (cold caches and idle threads). This is why the
   per-route routing column is higher than the isolated router latency above.
 
@@ -440,6 +581,10 @@ Three observations follow from this table.
   encoder responds to surface topic (places, "calculate", "temperature")
   rather than to what the user wants done, so overlapping intents are where
   they fail.
+* The classifier uses the same embedding but learns which directions matter
+  from 307 labelled queries. That removes most of the place-name errors
+  (88.0% against 70.0%) at no extra latency, at the cost of needing labelled
+  data and of retraining whenever a route is added.
 * The hybrid resolves 38.0% of queries on the rule path and calls the encoder
   only when the rules are not confident. Vetoes and abstentions let each
   router cover cases the other cannot, and low confidence becomes a
@@ -447,7 +592,9 @@ Three observations follow from this table.
   instead of an incorrect tool call. It still inherits the encoder's
   place-name bias where no rule matches or the encoder is confident enough to
   override a weak rule (`"What time is it in Tokyo?"` and `"Calculate the
-  average yearly rainfall in Singapore"` both go to weather).
+  average yearly rainfall in Singapore"` both go to weather). With the
+  classifier as the second router the Tokyo error disappears, because the
+  classifier abstains on it, and the rainfall query moves to the calculator.
 
 ### Scalability
 
@@ -519,6 +666,15 @@ alone. Three changes were made, all general rather than query-specific:
    "5 plus the number of planets" to the calculator). The labels were
    corrected and the numbers above are from the rerun. Routing decisions did
    not change; the corrections affected scores, not behaviour.
+6. A classifier router was added as the fourth router. Its training set
+   (`eval/train.jsonl`, 307 queries) was generated with a language model in
+   eight batches (four routes, two phrasing styles, a quarter of each batch
+   written as traps containing another route's vocabulary), then screened by
+   two independent model-based judges per batch, which removed 13 of 320
+   candidates. No training query shares 60% or more of its tokens with any
+   evaluation or registry query. At the same time, 60 unlabelled queries were
+   generated in the voice of two different users for an independent human
+   labeller (`eval/independent/`).
 
 Changes of this kind are a continuing maintenance cost for any system based
 on rules or prototypes.
@@ -545,13 +701,17 @@ on rules or prototypes.
   other four and can change decisions near a threshold. The add-a-tool test
   shows that the new tool is reachable, not that existing decisions are
   unchanged.
+* The classifier's training data is synthetic. It was generated and screened
+  by language models, not collected from users, so it reflects a model's idea
+  of how people phrase requests. The independent labelling set is the planned
+  check on that.
 * English only, and the rule regexes assume it.
 
 ## Possible improvements
 
-* Replace the top-3-mean scoring with a logistic regression over the embedding
-  (a few hundred labelled queries would be sufficient) and calibrate its
-  probabilities with a held-out split.
+* Retrain the classifier on labelled production traffic and calibrate its
+  probabilities on a held-out split, so the abstain threshold is set from
+  measured reliability rather than by inspection.
 * Chain dependent multi-step requests by substituting a step's answer into
   the next step's query.
 * Let the LLM rephrase tool output for the user (currently the tool text is
@@ -566,7 +726,8 @@ router/
   tools.py       RouteSpec, ToolRegistry, calculator / weather / web_search, default registry
   rules.py       RuleRouter
   embeddings.py  EmbeddingRouter
-  hybrid.py      HybridRouter
+  classifier.py  ClassifierRouter (logistic regression over the same embeddings)
+  hybrid.py      HybridRouter (rules plus either learned router)
   multistep.py   compound-query splitting
   llm.py         OllamaLLM, MockLLM
   app.py         Assistant: route, execute, answer, latency trace, 500-character cap
@@ -574,9 +735,11 @@ eval/
   dataset.jsonl  50 evaluation queries
   heldout.jsonl  22 post-tuning queries (v1, led to iteration 4)
   heldout2.jsonl 22 post-tuning queries (v2, run once against the final system)
+  train.jsonl    307 labelled training queries for the classifier, disjoint from all evaluation sets
+  independent/   unlabelled queries and labelling guide for an independent labeller
   run_eval.py    metrics, latency, results writer
 results/         metrics.json, results.md, examples.md, predictions.jsonl, e2e.jsonl
                  (+ heldout/, heldout2/, heldout-v1-frozen/)
-tests/           39 pytest tests, including the add-a-tool test
+tests/           43 pytest tests, including the add-a-tool test
 cli.py           one-shot command line
 ```

@@ -2,6 +2,7 @@
   "dataset": "dataset.jsonl",
   "runs": 5,
   "llm": "ollama",
+  "training_queries": 307,
   "routers": [
     {
       "router": "rules",
@@ -35,10 +36,10 @@
         "rules": 50
       },
       "latency_ms": {
-        "mean": 0.02172,
+        "mean": 0.02166,
         "p50": 0.023,
-        "p95": 0.036,
-        "max": 0.038
+        "p95": 0.037,
+        "max": 0.041
       },
       "confusion": {
         "calculator->calculator": 5,
@@ -91,10 +92,10 @@
         "embeddings": 50
       },
       "latency_ms": {
-        "mean": 5.9832,
-        "p50": 5.461,
-        "p95": 10.328,
-        "max": 10.487
+        "mean": 5.76432,
+        "p50": 5.285,
+        "p95": 10.25,
+        "max": 10.72
       },
       "confusion": {
         "calculator->calculator": 5,
@@ -154,10 +155,10 @@
         "hybrid(clarify)": 2
       },
       "latency_ms": {
-        "mean": 3.48924,
-        "p50": 5.184,
-        "p95": 5.789,
-        "max": 6.234
+        "mean": 3.47648,
+        "p50": 5.18,
+        "p95": 5.757,
+        "max": 6.239
       },
       "confusion": {
         "calculator->calculator": 6,
@@ -172,6 +173,125 @@
         "web_search->weather": 2,
         "web_search->web_search": 6
       }
+    },
+    {
+      "router": "classifier",
+      "n": 50,
+      "accuracy_lenient": 0.88,
+      "accuracy_strict": 0.8,
+      "incorrect_tool_rate": 0.08,
+      "unnecessary_tool_rate": 0.04,
+      "missed_tool_rate": 0.0,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.0,
+      "abstain_rate": 0.24,
+      "accuracy_by_category": {
+        "ambiguous": 0.625,
+        "clear": 1.0,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 0.8
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 10,
+          "accuracy": 1.0
+        },
+        "low (<0.5)": {
+          "n": 12,
+          "accuracy": 0.75
+        },
+        "mid (0.5-0.8)": {
+          "n": 28,
+          "accuracy": 0.8928571428571429
+        }
+      },
+      "paths": {
+        "classifier": 50
+      },
+      "latency_ms": {
+        "mean": 5.88006,
+        "p50": 5.379,
+        "p95": 10.716,
+        "max": 10.928
+      },
+      "confusion": {
+        "calculator->calculator": 6,
+        "clarify->calculator": 1,
+        "clarify->direct": 1,
+        "clarify->weather": 1,
+        "clarify->web_search": 1,
+        "direct->calculator": 2,
+        "direct->direct": 19,
+        "multi->multi": 4,
+        "weather->weather": 6,
+        "web_search->calculator": 2,
+        "web_search->direct": 1,
+        "web_search->weather": 1,
+        "web_search->web_search": 5
+      }
+    },
+    {
+      "router": "hybrid-clf",
+      "n": 50,
+      "accuracy_lenient": 0.94,
+      "accuracy_strict": 0.88,
+      "incorrect_tool_rate": 0.02,
+      "unnecessary_tool_rate": 0.02,
+      "missed_tool_rate": 0.02,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.06,
+      "abstain_rate": 0.12,
+      "accuracy_by_category": {
+        "ambiguous": 0.875,
+        "clear": 1.0,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 0.8666666666666667
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 19,
+          "accuracy": 0.9473684210526315
+        },
+        "low (<0.5)": {
+          "n": 5,
+          "accuracy": 1.0
+        },
+        "mid (0.5-0.8)": {
+          "n": 26,
+          "accuracy": 0.9230769230769231
+        }
+      },
+      "paths": {
+        "hybrid-clf(rules)": 19,
+        "hybrid-clf(agree)": 15,
+        "hybrid-clf(veto)": 1,
+        "hybrid-clf(fallback)": 6,
+        "hybrid-clf(rules-after-abstain)": 4,
+        "hybrid-clf(clarify)": 3,
+        "hybrid-clf(classifier)": 2
+      },
+      "latency_ms": {
+        "mean": 4.0263800000000005,
+        "p50": 5.374,
+        "p95": 7.214,
+        "max": 18.231
+      },
+      "confusion": {
+        "calculator->calculator": 6,
+        "clarify->clarify": 2,
+        "clarify->direct": 1,
+        "clarify->weather": 1,
+        "direct->calculator": 1,
+        "direct->direct": 20,
+        "multi->multi": 4,
+        "weather->weather": 6,
+        "web_search->calculator": 1,
+        "web_search->clarify": 1,
+        "web_search->direct": 1,
+        "web_search->web_search": 6
+      }
     }
   ],
   "end_to_end": {
@@ -180,67 +300,67 @@
       "calculator": {
         "n": 7,
         "total_ms": {
-          "mean": 517.381,
-          "p50": 51.317,
-          "p95": 1603.751
+          "mean": 511.13842857142856,
+          "p50": 43.73,
+          "p95": 1617.735
         },
-        "routing_ms_mean": 13.878714285714285,
-        "tool_ms_mean": 1.1717142857142857,
-        "llm_ms_mean": 501.803
+        "routing_ms_mean": 15.331428571428571,
+        "tool_ms_mean": 1.213,
+        "llm_ms_mean": 494.3805714285714
       },
       "clarify": {
         "n": 2,
         "total_ms": {
-          "mean": 21.0685,
-          "p50": 14.926,
-          "p95": 27.211
+          "mean": 21.621499999999997,
+          "p50": 20.189,
+          "p95": 23.054
         },
-        "routing_ms_mean": 20.998,
+        "routing_ms_mean": 21.4265,
         "tool_ms_mean": 0.0,
         "llm_ms_mean": 0.0
       },
       "direct": {
         "n": 22,
         "total_ms": {
-          "mean": 2238.794272727273,
-          "p50": 2314.946,
-          "p95": 3423.236
+          "mean": 2171.0395454545455,
+          "p50": 2113.985,
+          "p95": 3579.942
         },
-        "routing_ms_mean": 17.189045454545454,
+        "routing_ms_mean": 15.76831818181818,
         "tool_ms_mean": 0.0,
-        "llm_ms_mean": 2221.360681818182
+        "llm_ms_mean": 2155.0158636363635
       },
       "multi": {
         "n": 4,
         "total_ms": {
-          "mean": 713.7745,
-          "p50": 5.359,
-          "p95": 2848.723
+          "mean": 538.70175,
+          "p50": 5.724,
+          "p95": 2146.776
         },
-        "routing_ms_mean": 53.317,
-        "tool_ms_mean": 1.37975,
-        "llm_ms_mean": 658.93575
+        "routing_ms_mean": 6.16325,
+        "tool_ms_mean": 1.6820000000000002,
+        "llm_ms_mean": 530.62625
       },
       "weather": {
         "n": 9,
         "total_ms": {
-          "mean": 45.373666666666665,
-          "p50": 8.705,
-          "p95": 339.823
+          "mean": 75.28033333333333,
+          "p50": 9.815,
+          "p95": 591.103
         },
-        "routing_ms_mean": 45.06955555555555,
-        "tool_ms_mean": 0.2618888888888889,
+        "routing_ms_mean": 74.86711111111111,
+        "tool_ms_mean": 0.36822222222222223,
         "llm_ms_mean": 0.0
       },
       "web_search": {
         "n": 6,
         "total_ms": {
-          "mean": 6.322166666666667,
-          "p50": 0.175,
-          "p95": 24.51
+          "mean": 6.746166666666666,
+          "p50": 0.172,
+          "p95": 22.951
         },
-        "routing_ms_mean": 6.1905,
-        "tool_ms_mean": 0.10366666666666667,
+        "routing_ms_mean": 6.5935,
+        "tool_ms_mean": 0.12933333333333333,
         "llm_ms_mean": 0.0
       }
     }

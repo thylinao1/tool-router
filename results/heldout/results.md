@@ -9,6 +9,8 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 | rules | 90.9% | 81.8% | 0.0% | 0.0% | 9.1% | 0.0% | 0.0% | 31.8% |
 | embeddings | 86.4% | 81.8% | 9.1% | 4.5% | 0.0% | 0.0% | 0.0% | 27.3% |
 | hybrid | 95.5% | 90.9% | 0.0% | 0.0% | 4.5% | 0.0% | 0.0% | 22.7% |
+| classifier | 90.9% | 90.9% | 4.5% | 4.5% | 0.0% | 0.0% | 0.0% | 22.7% |
+| hybrid-clf | 100.0% | 95.5% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 9.1% |
 
 ## Confusion matrix (primary expected route -> predicted route)
 
@@ -45,6 +47,28 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 | weather | 0 | 0 | 0 | 0 | 5 | 0 |
 | web_search | 0 | 0 | 1 | 0 | 0 | 4 |
 
+### classifier
+
+| expected \ predicted | calculator | clarify | direct | multi | weather | web_search |
+|---|---|---|---|---|---|---|
+| calculator | 4 | 0 | 0 | 0 | 0 | 0 |
+| clarify | 0 | 0 | 0 | 0 | 0 | 1 |
+| direct | 1 | 0 | 5 | 0 | 0 | 0 |
+| multi | 0 | 0 | 0 | 1 | 0 | 0 |
+| weather | 0 | 0 | 0 | 0 | 5 | 0 |
+| web_search | 0 | 0 | 0 | 0 | 0 | 5 |
+
+### hybrid-clf
+
+| expected \ predicted | calculator | clarify | direct | multi | weather | web_search |
+|---|---|---|---|---|---|---|
+| calculator | 4 | 0 | 0 | 0 | 0 | 0 |
+| clarify | 0 | 0 | 1 | 0 | 0 | 0 |
+| direct | 0 | 0 | 6 | 0 | 0 | 0 |
+| multi | 0 | 0 | 0 | 1 | 0 | 0 |
+| weather | 0 | 0 | 0 | 0 | 5 | 0 |
+| web_search | 0 | 0 | 0 | 0 | 0 | 5 |
+
 
 ## Accuracy by query category (lenient)
 
@@ -53,6 +77,8 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 | rules | 66.7% | 90.9% | 100.0% | 100.0% | 100.0% |
 | embeddings | 66.7% | 90.9% | 100.0% | 100.0% | 75.0% |
 | hybrid | 100.0% | 90.9% | 100.0% | 100.0% | 100.0% |
+| classifier | 66.7% | 100.0% | 100.0% | 100.0% | 75.0% |
+| hybrid-clf | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
 
 ## Accuracy by confidence bucket (lenient)
 
@@ -67,16 +93,24 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 | hybrid | high (>=0.8) | 10 | 100.0% |
 | hybrid | low (<0.5) | 4 | 100.0% |
 | hybrid | mid (0.5-0.8) | 8 | 87.5% |
+| classifier | high (>=0.8) | 7 | 100.0% |
+| classifier | low (<0.5) | 5 | 60.0% |
+| classifier | mid (0.5-0.8) | 10 | 100.0% |
+| hybrid-clf | high (>=0.8) | 8 | 100.0% |
+| hybrid-clf | low (<0.5) | 2 | 100.0% |
+| hybrid-clf | mid (0.5-0.8) | 12 | 100.0% |
 
 ## Router latency (ms)
 
 | Router | mean | p50 | p95 | max |
 |---|---|---|---|---|
 | rules | 0.023 | 0.023 | 0.034 | 0.035 |
-| embeddings | 5.898 | 5.646 | 6.354 | 10.552 |
-| hybrid | 3.506 | 5.185 | 5.765 | 5.939 |
+| embeddings | 6.149 | 5.946 | 6.584 | 11.222 |
+| hybrid | 3.852 | 5.755 | 6.484 | 6.606 |
+| classifier | 6.250 | 5.957 | 6.737 | 11.295 |
+| hybrid-clf | 3.890 | 5.851 | 6.609 | 6.669 |
 
-## Hybrid decision paths
+## Decision paths: hybrid
 
 | path | queries |
 |---|---|
@@ -87,15 +121,26 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 | hybrid(rules-after-abstain) | 1 |
 | hybrid(veto) | 1 |
 
+## Decision paths: hybrid-clf
+
+| path | queries |
+|---|---|
+| hybrid-clf(rules) | 8 |
+| hybrid-clf(classifier) | 5 |
+| hybrid-clf(agree) | 4 |
+| hybrid-clf(rules-after-abstain) | 2 |
+| hybrid-clf(fallback) | 2 |
+| hybrid-clf(veto) | 1 |
+
 ## End-to-end latency per route (hybrid router, LLM = ollama)
 
 | Route | n | total mean | total p50 | total p95 | routing | tool | llm |
 |---|---|---|---|---|---|---|---|
-| calculator | 4 | 231.5 | 3.2 | 921.3 | 2.84 | 0.92 | 227.6 |
-| direct | 8 | 2196.1 | 2524.4 | 3278.0 | 15.71 | 0.00 | 2180.2 |
-| multi | 1 | 0.5 | 0.5 | 0.5 | 0.12 | 0.31 | 0.0 |
-| weather | 5 | 12.0 | 18.4 | 21.7 | 11.76 | 0.17 | 0.0 |
-| web_search | 4 | 12.9 | 19.8 | 22.1 | 12.68 | 0.19 | 0.0 |
+| calculator | 4 | 234.2 | 4.0 | 931.6 | 3.68 | 1.19 | 229.2 |
+| direct | 8 | 1934.6 | 1914.1 | 3056.7 | 17.82 | 0.00 | 1916.6 |
+| multi | 1 | 0.6 | 0.6 | 0.6 | 0.12 | 0.36 | 0.0 |
+| weather | 5 | 18.1 | 26.1 | 36.8 | 17.85 | 0.25 | 0.0 |
+| web_search | 4 | 16.3 | 23.1 | 28.7 | 16.08 | 0.17 | 0.0 |
 
 ## Errors per router
 
@@ -119,4 +164,16 @@ Dataset: 22 queries (heldout.jsonl). Rates use the full dataset as denominator. 
 | id | query | expected | predicted | conf | error |
 |---|---|---|---|---|---|
 | 17 | Find the cheapest flights from Singapore to Tokyo next month | web_search | direct | 0.50 | missed_tool |
+
+### classifier (2 errors)
+
+| id | query | expected | predicted | conf | error |
+|---|---|---|---|---|---|
+| 16 | Explain how a calculator computes square roots | direct | calculator | 0.48 | unnecessary_tool |
+| 18 | Any idea? | clarify | web_search | 0.47 | incorrect_tool |
+
+### hybrid-clf (0 errors)
+
+| id | query | expected | predicted | conf | error |
+|---|---|---|---|---|---|
 

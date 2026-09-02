@@ -1,5 +1,7 @@
-"""Hybrid router: rules on the fast path, embeddings as the tie-breaker, and an
-explicit clarify decision when neither is confident.
+"""Hybrid router: rules on the fast path, a second router (embeddings by default,
+or the classifier) as the tie-breaker, and an explicit clarify decision when
+neither is confident. The second router only needs route(), and its decisions
+must carry candidates and the abstained flag.
 
 Decision procedure (each step returns if it applies):
   1. rules confident (>= rule_accept)                -> rule decision, no embedding call
@@ -19,27 +21,26 @@ import time
 
 from .schema import RoutingDecision, DIRECT, CLARIFY
 from .rules import RuleRouter
-from .embeddings import EmbeddingRouter
 
 
 class HybridRouter:
     name = "hybrid"
 
-    def __init__(self, rules: RuleRouter, embeddings: EmbeddingRouter,
+    def __init__(self, rules: RuleRouter, second,
                  rule_accept: float = 0.8, embed_accept: float = 0.6,
-                 strong_accept: float = 0.8, on_ambiguous: str = CLARIFY) -> None:
+                 strong_accept: float = 0.8, on_ambiguous: str = CLARIFY, name: str = "hybrid") -> None:
         if on_ambiguous not in (CLARIFY, DIRECT):
-            raise ValueError("on_ambiguous must be \'clarify\' or \'direct\'")
+            raise ValueError("on_ambiguous must be 'clarify' or 'direct'")
+        self.name = name
         self.rules = rules
-        self.embeddings = embeddings
+        self.second = second
         self.rule_accept = rule_accept
         self.embed_accept = embed_accept
         self.strong_accept = strong_accept
         self.on_ambiguous = on_ambiguous
 
-    @staticmethod
-    def _tag(decision: RoutingDecision, path: str, note: str = "") -> RoutingDecision:
-        decision.router = f"hybrid({path})"
+    def _tag(self, decision: RoutingDecision, path: str, note: str = "") -> RoutingDecision:
+        decision.router = f"{self.name}({path})"
         if note:
             decision.reason = f"{note}; {decision.reason}"
         return decision
@@ -56,10 +57,10 @@ class HybridRouter:
         if self.on_ambiguous == DIRECT or both_abstained or top == DIRECT:
             why = ("neither router had any signal" if both_abstained else
                    "leading candidate is already direct" if top == DIRECT else "on_ambiguous=direct")
-            return RoutingDecision(route=DIRECT, confidence=min(e.confidence, 0.5), router="hybrid(fallback)",
+            return RoutingDecision(route=DIRECT, confidence=min(e.confidence, 0.5), router=f"{self.name}(fallback)",
                                    candidates=e.candidates, vetoed=r.vetoed, abstained=both_abstained,
                                    reason=f"ambiguous, answering directly ({why}): {detail}")
-        return RoutingDecision(route=CLARIFY, confidence=e.confidence, router="hybrid(clarify)",
+        return RoutingDecision(route=CLARIFY, confidence=e.confidence, router=f"{self.name}(clarify)",
                                candidates=e.candidates, vetoed=r.vetoed, reason=detail)
 
     def _decide(self, query: str) -> RoutingDecision:
@@ -67,7 +68,7 @@ class HybridRouter:
         if not r.abstained and r.confidence >= self.rule_accept:
             return self._tag(r, "rules")
 
-        e = self.embeddings.route(query)
+        e = self.second.route(query)
         if e.route in r.vetoed:
             return self._tag(r, "veto", f"embeddings chose {e.route} but a rule vetoed it")
         if e.abstained:
@@ -76,15 +77,15 @@ class HybridRouter:
             return self._ambiguous(r, e)
         if r.abstained:
             if e.confidence >= self.embed_accept:
-                return self._tag(e, "embeddings", "rules had no signal")
+                return self._tag(e, self.second.name, "rules had no signal")
             return self._ambiguous(r, e)
         if r.route == e.route:
             return RoutingDecision(
-                route=e.route, confidence=(r.confidence + e.confidence) / 2, router="hybrid(agree)",
+                route=e.route, confidence=(r.confidence + e.confidence) / 2, router=f"{self.name}(agree)",
                 candidates=e.candidates, vetoed=r.vetoed,
                 reason=f"rules ({r.confidence:.2f}) and embeddings ({e.confidence:.2f}) both chose {e.route}")
         if e.confidence >= self.strong_accept:
-            return self._tag(e, "embeddings", f"overrides rules ({r.route} {r.confidence:.2f})")
+            return self._tag(e, self.second.name, f"overrides rules ({r.route} {r.confidence:.2f})")
         return self._ambiguous(r, e)
 
     def route(self, query: str) -> RoutingDecision:

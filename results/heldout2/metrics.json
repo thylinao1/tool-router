@@ -2,6 +2,7 @@
   "dataset": "heldout2.jsonl",
   "runs": 5,
   "llm": "ollama",
+  "training_queries": 307,
   "routers": [
     {
       "router": "rules",
@@ -39,10 +40,10 @@
         "rules": 22
       },
       "latency_ms": {
-        "mean": 0.024409090909090908,
+        "mean": 0.023863636363636365,
         "p50": 0.026,
-        "p95": 0.033,
-        "max": 0.035
+        "p95": 0.032,
+        "max": 0.034
       },
       "confusion": {
         "calculator->calculator": 3,
@@ -92,10 +93,10 @@
         "embeddings": 22
       },
       "latency_ms": {
-        "mean": 6.509227272727273,
-        "p50": 6.372,
-        "p95": 7.047,
-        "max": 11.675
+        "mean": 6.424227272727273,
+        "p50": 5.938,
+        "p95": 8.026,
+        "max": 11.2
       },
       "confusion": {
         "calculator->calculator": 4,
@@ -150,10 +151,115 @@
         "hybrid(veto)": 1
       },
       "latency_ms": {
-        "mean": 3.6574545454545455,
-        "p50": 5.783,
-        "p95": 6.593,
-        "max": 6.985
+        "mean": 3.3687272727272726,
+        "p50": 5.515,
+        "p95": 5.862,
+        "max": 6.261
+      },
+      "confusion": {
+        "calculator->calculator": 4,
+        "clarify->direct": 2,
+        "direct->direct": 6,
+        "multi->multi": 1,
+        "weather->weather": 5,
+        "web_search->web_search": 4
+      }
+    },
+    {
+      "router": "classifier",
+      "n": 22,
+      "accuracy_lenient": 0.9545454545454546,
+      "accuracy_strict": 0.8636363636363636,
+      "incorrect_tool_rate": 0.0,
+      "unnecessary_tool_rate": 0.045454545454545456,
+      "missed_tool_rate": 0.0,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.0,
+      "abstain_rate": 0.13636363636363635,
+      "accuracy_by_category": {
+        "ambiguous": 1.0,
+        "clear": 1.0,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 0.75
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 8,
+          "accuracy": 1.0
+        },
+        "low (<0.5)": {
+          "n": 3,
+          "accuracy": 1.0
+        },
+        "mid (0.5-0.8)": {
+          "n": 11,
+          "accuracy": 0.9090909090909091
+        }
+      },
+      "paths": {
+        "classifier": 22
+      },
+      "latency_ms": {
+        "mean": 5.865818181818182,
+        "p50": 5.606,
+        "p95": 5.89,
+        "max": 11.15
+      },
+      "confusion": {
+        "calculator->calculator": 4,
+        "clarify->direct": 2,
+        "direct->calculator": 1,
+        "direct->direct": 5,
+        "multi->multi": 1,
+        "weather->weather": 5,
+        "web_search->web_search": 4
+      }
+    },
+    {
+      "router": "hybrid-clf",
+      "n": 22,
+      "accuracy_lenient": 1.0,
+      "accuracy_strict": 0.9090909090909091,
+      "incorrect_tool_rate": 0.0,
+      "unnecessary_tool_rate": 0.0,
+      "missed_tool_rate": 0.0,
+      "multi_step_error_rate": 0.0,
+      "clarify_rate": 0.0,
+      "abstain_rate": 0.13636363636363635,
+      "accuracy_by_category": {
+        "ambiguous": 1.0,
+        "clear": 1.0,
+        "multi": 1.0,
+        "no_tool": 1.0,
+        "overlap": 1.0
+      },
+      "accuracy_by_confidence": {
+        "high (>=0.8)": {
+          "n": 11,
+          "accuracy": 1.0
+        },
+        "low (<0.5)": {
+          "n": 3,
+          "accuracy": 1.0
+        },
+        "mid (0.5-0.8)": {
+          "n": 8,
+          "accuracy": 1.0
+        }
+      },
+      "paths": {
+        "hybrid-clf(rules)": 9,
+        "hybrid-clf(agree)": 5,
+        "hybrid-clf(fallback)": 4,
+        "hybrid-clf(classifier)": 3,
+        "hybrid-clf(veto)": 1
+      },
+      "latency_ms": {
+        "mean": 3.326409090909091,
+        "p50": 5.398,
+        "p95": 5.882,
+        "max": 5.907
       },
       "confusion": {
         "calculator->calculator": 4,
@@ -171,56 +277,56 @@
       "calculator": {
         "n": 4,
         "total_ms": {
-          "mean": 223.733,
-          "p50": 24.622,
-          "p95": 866.578
+          "mean": 259.53875,
+          "p50": 23.046,
+          "p95": 1010.703
         },
-        "routing_ms_mean": 9.276499999999999,
-        "tool_ms_mean": 0.8652500000000001,
-        "llm_ms_mean": 213.5075
+        "routing_ms_mean": 8.613999999999999,
+        "tool_ms_mean": 0.9615,
+        "llm_ms_mean": 249.8575
       },
       "direct": {
         "n": 8,
         "total_ms": {
-          "mean": 1801.76025,
-          "p50": 2077.197,
-          "p95": 3118.532
+          "mean": 1817.764125,
+          "p50": 1993.607,
+          "p95": 3004.673
         },
-        "routing_ms_mean": 15.27525,
+        "routing_ms_mean": 13.678875,
         "tool_ms_mean": 0.0,
-        "llm_ms_mean": 1786.3397499999999
+        "llm_ms_mean": 1803.94625
       },
       "multi": {
         "n": 1,
         "total_ms": {
-          "mean": 0.959,
-          "p50": 0.959,
-          "p95": 0.959
+          "mean": 1.42,
+          "p50": 1.42,
+          "p95": 1.42
         },
-        "routing_ms_mean": 0.143,
-        "tool_ms_mean": 0.701,
+        "routing_ms_mean": 0.247,
+        "tool_ms_mean": 0.971,
         "llm_ms_mean": 0.0
       },
       "weather": {
         "n": 5,
         "total_ms": {
-          "mean": 7.2264,
-          "p50": 0.531,
-          "p95": 23.294
+          "mean": 8.0946,
+          "p50": 0.376,
+          "p95": 27.28
         },
-        "routing_ms_mean": 6.982,
-        "tool_ms_mean": 0.1642,
+        "routing_ms_mean": 7.8802,
+        "tool_ms_mean": 0.154,
         "llm_ms_mean": 0.0
       },
       "web_search": {
         "n": 4,
         "total_ms": {
-          "mean": 15.67575,
-          "p50": 25.196,
-          "p95": 28.722
+          "mean": 13.00675,
+          "p50": 20.833,
+          "p95": 21.907
         },
-        "routing_ms_mean": 15.442,
-        "tool_ms_mean": 0.19025,
+        "routing_ms_mean": 12.78425,
+        "tool_ms_mean": 0.17275000000000001,
         "llm_ms_mean": 0.0
       }
     }

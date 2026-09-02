@@ -8,7 +8,7 @@
 import argparse
 import json
 
-from router import (build_default_registry, RuleRouter, EmbeddingRouter, HybridRouter,
+from router import (build_default_registry, RuleRouter, EmbeddingRouter, ClassifierRouter, HybridRouter,
                     Assistant, get_llm, route_with_steps)
 
 
@@ -19,13 +19,18 @@ def build_router(name: str, registry, on_ambiguous: str = "clarify"):
     embeddings = EmbeddingRouter(registry)
     if name == "embeddings":
         return embeddings
+    if name in ("classifier", "hybrid-clf"):
+        classifier = ClassifierRouter(registry, encoder=embeddings.model)
+        if name == "classifier":
+            return classifier
+        return HybridRouter(rules, classifier, on_ambiguous=on_ambiguous, name="hybrid-clf")
     return HybridRouter(rules, embeddings, on_ambiguous=on_ambiguous)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("query")
-    ap.add_argument("--router", choices=["rules", "embeddings", "hybrid"], default="hybrid")
+    ap.add_argument("--router", choices=["rules", "embeddings", "classifier", "hybrid", "hybrid-clf"], default="hybrid")
     ap.add_argument("--on-ambiguous", choices=["clarify", "direct"], default="clarify",
                     help="hybrid only: ask the user, or answer directly, when no route is confident")
     ap.add_argument("--decision-only", action="store_true", help="route without executing tools or the LLM")

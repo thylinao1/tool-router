@@ -1,6 +1,6 @@
 """Evaluate the three routers on eval/dataset.jsonl and write results/.
 
-Usage:  python -m eval.run_eval [--no-llm] [--runs N] [--dataset PATH] [--out DIR]
+Usage:  python -m eval.run_eval [--no-llm] [--runs N] [--dataset PATH] [--out DIR] [--train PATH]
 
 Metrics (all rates use the full dataset size N as the denominator):
   accuracy_lenient      predicted route is in the item's acceptable set
@@ -26,8 +26,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from router import (build_default_registry, RuleRouter, EmbeddingRouter, HybridRouter,
+from router import (build_default_registry, RuleRouter, EmbeddingRouter, ClassifierRouter, HybridRouter,
                     route_with_steps, Assistant, get_llm, MockLLM, DIRECT, CLARIFY)
+from router.classifier import load_training
 
 ROOT = Path(__file__).resolve().parents[1]
 DATASET = ROOT / "eval" / "dataset.jsonl"
@@ -36,18 +37,26 @@ EXAMPLE_IDS = [1, 2, 3, 4, 20, 34, 35, 39, 47]   # spec examples, overlaps, ambi
 
 
 def load_dataset(path: Path = DATASET) -> list[dict]:
-    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    unlabelled = [r["id"] for r in rows if not r.get("expected")]
+    if unlabelled:
+        raise SystemExit(f"items without an 'expected' label: {unlabelled}")
+    for r in rows:
+        r.setdefault("category", "unlabelled")
+        r.setdefault("acceptable", [r["expected"]])
+    return rows
 
 
 def normalize(text: str) -> str:
     return re.sub(r"[^a-z0-9 ]", "", text.lower()).strip()
 
 
-def check_no_leakage(dataset: list[dict], registry) -> None:
+def check_no_leakage(dataset: list[dict], registry, training: list[dict]) -> None:
     examples = {normalize(ex) for spec in registry for ex in spec.examples}
+    examples |= {normalize(t["query"]) for t in training}
     leaked = [d["query"] for d in dataset if normalize(d["query"]) in examples]
     if leaked:
-        raise SystemExit(f"evaluation queries duplicate router examples: {leaked}")
+        raise SystemExit(f"evaluation queries duplicate router examples or training queries: {leaked}")
 
 
 def score_item(item: dict, predicted: list[str], tools: set[str]) -> dict:
@@ -202,9 +211,8 @@ def write_markdown(results: list[dict], e2e: dict, out: Path, dataset_name: str,
     for r in results:
         l = r["latency_ms"]
         lines.append(f"| {r['router']} | {l['mean']:.3f} | {l['p50']:.3f} | {l['p95']:.3f} | {l['max']:.3f} |")
-    hybrid = next((r for r in results if r["router"] == "hybrid"), None)
-    if hybrid:
-        lines += ["", "## Hybrid decision paths", "", "| path | queries |", "|---|---|"]
+    for hybrid in [r for r in results if r["router"].startswith("hybrid")]:
+        lines += ["", f"## Decision paths: {hybrid['router']}", "", "| path | queries |", "|---|---|"]
         for p, c in sorted(hybrid["paths"].items(), key=lambda kv: -kv[1]):
             lines.append(f"| {p} | {c} |")
     lines += ["", f"## End-to-end latency per route (hybrid router, LLM = {e2e['llm']})", "",
@@ -238,6 +246,8 @@ def main() -> None:
     ap.add_argument("--runs", type=int, default=5, help="timed repetitions per query for router latency")
     ap.add_argument("--dataset", type=Path, default=DATASET)
     ap.add_argument("--out", type=Path, default=RESULTS)
+    ap.add_argument("--train", type=Path, default=ROOT / "eval" / "train.jsonl",
+                    help="labelled training queries for the classifier router")
     args = ap.parse_args()
 
     import torch
@@ -245,13 +255,20 @@ def main() -> None:
 
     dataset = load_dataset(args.dataset)
     registry = build_default_registry()
-    check_no_leakage(dataset, registry)
+    training = load_training(args.train) if args.train.exists() else []
+    check_no_leakage(dataset, registry, training)
     tools = set(registry.tool_names())
     rules = RuleRouter(registry)
     embeddings = EmbeddingRouter(registry)
     hybrid = HybridRouter(rules, embeddings)
+    routers = [rules, embeddings, hybrid]
+    if training:
+        classifier = ClassifierRouter(registry, args.train, encoder=embeddings.model)
+        routers += [classifier, HybridRouter(rules, classifier, name="hybrid-clf")]
+    else:
+        print(f"no training file at {args.train}; skipping the classifier router")
 
-    results = [evaluate_router(r.name, r, dataset, args.runs, tools) for r in (rules, embeddings, hybrid)]
+    results = [evaluate_router(r.name, r, dataset, args.runs, tools) for r in routers]
     for r in results:
         print(f"{r['router']:11} lenient {pct(r['accuracy_lenient'])}  strict {pct(r['accuracy_strict'])}  "
               f"incorrect-tool {pct(r['incorrect_tool_rate'])}  unnecessary-tool {pct(r['unnecessary_tool_rate'])}  "
@@ -264,7 +281,7 @@ def main() -> None:
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
     (out / "metrics.json").write_text(json.dumps(
-        {"dataset": args.dataset.name, "runs": args.runs, "llm": llm.name,
+        {"dataset": args.dataset.name, "runs": args.runs, "llm": llm.name, "training_queries": len(training),
          "routers": [{k: v for k, v in r.items() if k != "rows"} for r in results],
          "end_to_end": {k: v for k, v in e2e.items() if k not in ("traces", "rows")}}, indent=2))
     with (out / "e2e.jsonl").open("w") as f:
