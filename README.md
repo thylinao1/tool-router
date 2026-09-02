@@ -70,12 +70,15 @@ hybrid can use either learned router as its second opinion:
 The rule router scores well on this set partly because the same person wrote
 the rules and the evaluation set. Replacing nearest-prototype scoring with a
 classifier trained on 307 labelled queries raises the learned router from
-70.0% to 88.0%, and the hybrid built on it is the best configuration on every
-set: 94.0% lenient here, 100.0% and 100.0% on the two held-out sets (95.5% and
-90.9% strict). The first held-out run, against the frozen system, scored 77.3%
-and revealed a flaw in the ambiguity policy; the second held-out set is a
-slot-by-slot paraphrase of the first. The Evaluation section gives the details
-and the caveats.
+70.0% to 88.0%, and the hybrid built on it is the best configuration on the
+author's sets: 94.0% lenient here and 100.0% on both held-out sets.
+
+On 60 queries labelled independently by a second person, the same
+configuration scores 60.0% lenient and 51.7% strict (75.0% on the 36
+items with a single tool or direct label), and the rule-based configurations
+fall to about a third. The self-authored sets overstate performance by 20 to
+60 points depending on the router. The Evaluation section gives the breakdown
+by cause.
 
 Full tables, per-query predictions and error lists are in [`results/results.md`](results/results.md).
 Example traces are in [`results/examples.md`](results/examples.md).
@@ -98,6 +101,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m eval.run_eval              # writes results/
 .venv/bin/python -m eval.run_eval --no-llm     # same, with the mock LLM for direct answers
 .venv/bin/python -m eval.run_eval --dataset eval/heldout2.jsonl --out results/heldout2
+.venv/bin/python -m eval.run_eval --dataset eval/independent/labelled.jsonl --out results/independent
 ```
 
 The first run downloads the sentence-transformer model (about 90 MB);
@@ -403,11 +407,74 @@ holds up under paraphrase; it is not an independent sample of new traffic.
 ### Independent labelling set
 
 `eval/independent/to_label.jsonl` contains 60 queries written in the voice
-of two different users by people other than the author of the routers, with no
-labels. `eval/independent/LABELLING.md` explains how to label them
-independently and how to score the result. Labelling is in progress; when the
-labelled file exists the evaluator scores it with the same metrics and writes
-`results/independent/`.
+of two different users (a student in Singapore, an operations manager in
+London), generated separately from the routers and the other sets. A second
+person labelled them without seeing any router output, following
+`eval/independent/LABELLING.md`; the labelled file is
+`eval/independent/labelled.jsonl`. It was scored once with the final system
+and nothing was changed afterwards. Results are in `results/independent/`.
+
+| Router | Accuracy (lenient) | Accuracy (strict) | Incorrect tool | Unnecessary tool | Missed tool | Clarify rate | Abstain rate |
+|---|---|---|---|---|---|---|---|
+| rules | 31.7% | 25.0% | 5.0% | 1.7% | 33.3% | 0.0% | 65.0% |
+| embeddings | 43.3% | 31.7% | 31.7% | 13.3% | 0.0% | 0.0% | 56.7% |
+| hybrid | 36.7% | 28.3% | 15.0% | 1.7% | 25.0% | 13.3% | 40.0% |
+| classifier | 60.0% | 48.3% | 21.7% | 5.0% | 0.0% | 0.0% | 21.7% |
+| hybrid-clf | 60.0% | 51.7% | 10.0% | 0.0% | 8.3% | 11.7% | 16.7% |
+
+Accuracy by the labeller's category:
+
+| Router | ambiguous | clear | multi | no_tool | overlap |
+|---|---|---|---|---|---|
+| rules | 0.0% | 28.0% | 45.5% | 100.0% | 38.5% |
+| embeddings | 11.1% | 64.0% | 63.6% | 0.0% | 15.4% |
+| hybrid | 33.3% | 28.0% | 54.5% | 100.0% | 30.8% |
+| classifier | 11.1% | 84.0% | 63.6% | 50.0% | 46.2% |
+| hybrid-clf | 33.3% | 76.0% | 54.5% | 100.0% | 46.2% |
+
+The drop from the self-authored sets is the main result of this evaluation.
+Three things account for it.
+
+First, the rules and the prototypes were written in the author's phrasing and
+do not transfer: the rule router abstains on 65.0% of these queries and the
+embedding router on 56.7%. The default hybrid is worse than the embedding
+router alone here because when both of its routers abstain it answers
+directly, which counts as a missed tool (25.0%). The classifier transfers
+best (21.7% abstention), and `hybrid-clf` is the only configuration with no
+unnecessary tool calls.
+
+Second, the labeller applied three conventions that differ from the guide,
+and the scoring rules preserve them rather than correct them (see
+`LABELLING.md`, "How `multi` is scored"):
+
+* `multi` was used for 15 messages that contain one request plus context or
+  a second clause ("why's the FTSE off this morning", "give me two caption
+  ideas for a bintan sunset photo, nothing cringe"), not only for two
+  separate requests. The routers split two of the 15. The other 13 count as
+  correct only where the labeller listed the single route as acceptable,
+  which was the case for four of them.
+* Nine items are labelled `clarify`. Three are follow-ups with no context
+  ("same but for sunday"), which a single-message router cannot detect. The
+  others include arithmetic and reference questions with all the information
+  present ("14 hours at 13.50 an hour, what does that come to").
+* Short-horizon local forecasts ("Dublin saturday lunchtime, dry enough to
+  sit outside?") are labelled `web_search`; the routers send them to weather.
+
+On the 36 items whose label is a single tool or `direct`, `hybrid-clf` scores
+75.0% (27 of 36). Counting weather as acceptable where the label is
+`web_search` and the router chose weather, it scores 86.1% (31 of 36). The
+five remaining errors are router misses: arithmetic phrased in words without
+operators ("three shifts of 11 people, two call in sick on each, how many are
+actually on the floor", "what's that as a percentage increase?"),
+current-information questions with no recency vocabulary ("what's the
+national living wage going up to in april"), and forecast questions with no
+weather vocabulary ("Does it look like it'll clear up over Manchester by
+kick-off on Saturday?", "whats the uv index looking like in bintan tomorrow
+morning").
+
+Third, the labelling guide was not explicit enough about `multi` and
+`clarify`. That is a defect of the guide, and the independent labels are
+reported as given.
 
 ### Metrics
 
@@ -574,8 +641,9 @@ Three observations follow from this table.
 * Rules cost tens of microseconds and are precise on the phrasings they were
   written for. They do not generalise to paraphrases that were not
   anticipated, and each new phrasing requires a person to add a rule. Their
-  high score here is partly due to the same person writing the rules and the
-  evaluation set.
+  high score on the author's sets is due to the same person writing the rules
+  and the evaluation set; on the independently labelled set they abstain on
+  65.0% of queries and score 31.7%.
 * Embeddings generalise across phrasing without rule writing and cost about
   6 ms per query on a laptop CPU. Their weakness is that a small general
   encoder responds to surface topic (places, "calculate", "temperature")
@@ -584,7 +652,8 @@ Three observations follow from this table.
 * The classifier uses the same embedding but learns which directions matter
   from 307 labelled queries. That removes most of the place-name errors
   (88.0% against 70.0%) at no extra latency, at the cost of needing labelled
-  data and of retraining whenever a route is added.
+  data and of retraining whenever a route is added. It is also the router
+  that transfers best to the independently labelled set.
 * The hybrid resolves 38.0% of queries on the rule path and calls the encoder
   only when the rules are not confident. Vetoes and abstentions let each
   router cover cases the other cannot, and low confidence becomes a
@@ -675,15 +744,21 @@ alone. Three changes were made, all general rather than query-specific:
    evaluation or registry query. At the same time, 60 unlabelled queries were
    generated in the voice of two different users for an independent human
    labeller (`eval/independent/`).
+7. The independent set was labelled by a second person and scored once.
+   `hybrid-clf` scored 60.0% lenient against 94.0% and 100.0% on the author's
+   sets. No change was made to the routers, thresholds or labels after this
+   run; the breakdown in the Evaluation section is the record.
 
 Changes of this kind are a continuing maintenance cost for any system based
 on rules or prototypes.
 
 ## Limitations
 
-* Small, single-author evaluation. 50 plus 22 queries, labelled by the
-  person who wrote the routers. Production traffic would contain phrasings
-  that none of the rules or prototypes cover.
+* The author's evaluation sets overstate performance. On 60 independently
+  labelled queries the rule-based configurations fall from above 90% to
+  about a third, and the best configuration from 94% to 60% (75% on
+  single-route items). Rules and prototypes written by one person encode that
+  person's phrasing.
 * The encoder responds to topic rather than intent. `all-MiniLM-L6-v2` is a
   general sentence encoder. `"What time is it in Tokyo?"` still routes to
   weather because "in Tokyo" outweighs "what time". A small classifier
@@ -703,8 +778,12 @@ on rules or prototypes.
   unchanged.
 * The classifier's training data is synthetic. It was generated and screened
   by language models, not collected from users, so it reflects a model's idea
-  of how people phrase requests. The independent labelling set is the planned
-  check on that.
+  of how people phrase requests. The independent set shows the gap: the
+  classifier still misses arithmetic phrased in words and current-information
+  questions without recency vocabulary.
+* Single-message routing cannot handle follow-ups. "same but for sunday" has
+  no meaning without the previous turn; three of the independent items are of
+  this kind.
 * English only, and the rule regexes assume it.
 
 ## Possible improvements
@@ -736,10 +815,10 @@ eval/
   heldout.jsonl  22 post-tuning queries (v1, led to iteration 4)
   heldout2.jsonl 22 post-tuning queries (v2, run once against the final system)
   train.jsonl    307 labelled training queries for the classifier, disjoint from all evaluation sets
-  independent/   unlabelled queries and labelling guide for an independent labeller
+  independent/   60 queries, labelling guide, and the independently labelled file
   run_eval.py    metrics, latency, results writer
 results/         metrics.json, results.md, examples.md, predictions.jsonl, e2e.jsonl
-                 (+ heldout/, heldout2/, heldout-v1-frozen/)
+                 (+ heldout/, heldout2/, heldout-v1-frozen/, independent/)
 tests/           43 pytest tests, including the add-a-tool test
 cli.py           one-shot command line
 ```

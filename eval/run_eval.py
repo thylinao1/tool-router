@@ -61,10 +61,17 @@ def check_no_leakage(dataset: list[dict], registry, training: list[dict]) -> Non
 
 def score_item(item: dict, predicted: list[str], tools: set[str]) -> dict:
     if item["expected"] == "multi":
-        ok = predicted == item["steps"]
-        return {"lenient": ok, "strict": ok, "error": None if ok else "multi_step"}
+        if "steps" in item:
+            ok = predicted == item["steps"]
+            return {"lenient": ok, "strict": ok, "error": None if ok else "multi_step"}
+        # labelled "multi" without an ordered step list (independent labeller's format):
+        # strict requires a split; lenient also accepts a single route from the acceptable list
+        split = len(predicted) > 1
+        lenient = split or predicted[0] in item["acceptable"]
+        return {"lenient": lenient, "strict": split, "error": None if lenient else "multi_step"}
     if len(predicted) != 1:
-        return {"lenient": False, "strict": False, "error": "wrong_split"}
+        ok = "multi" in item["acceptable"]   # a split was listed as acceptable
+        return {"lenient": ok, "strict": False, "error": None if ok else "wrong_split"}
     p, expected, acceptable = predicted[0], item["expected"], item["acceptable"]
     lenient, strict = p in acceptable, p == expected
     error = None
@@ -101,7 +108,7 @@ def evaluate_router(name: str, router, dataset: list[dict], runs: int, tools: se
         scored = score_item(item, predicted, tools)
         rows.append({
             "id": item["id"], "query": item["query"], "category": item["category"],
-            "expected": item["expected"] if item["expected"] != "multi" else item["steps"],
+            "expected": item["expected"] if item["expected"] != "multi" else item.get("steps", "multi"),
             "acceptable": item.get("acceptable"), "predicted": predicted,
             "confidence": round(min(d.confidence for d in decisions), 3),
             "abstained": any(d.abstained for d in decisions),

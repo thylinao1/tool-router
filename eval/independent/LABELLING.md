@@ -42,6 +42,20 @@ Do not look at the router's output or at `eval/dataset.jsonl` while labelling.
 The file has 60 items. If that is too many, label the first 40 and delete the
 remaining lines; the evaluator scores whatever the file contains.
 
+## How `multi` is scored
+
+The labelled file (`labelled.jsonl`) uses `multi` without an ordered
+`steps` list, so the evaluator applies two rules for this format:
+
+* An item whose `expected` is `multi` counts as strictly correct only if the
+  router split the message into two or more steps. It counts as leniently
+  correct if the router split it, or if the router's single route appears in
+  the item's `acceptable` list.
+* An item whose `acceptable` list contains `multi` counts as leniently
+  correct if the router split the message, in addition to the usual rule.
+
+Both rules use only what the labeller wrote; no label was changed.
+
 ## Scoring
 
 Save the completed file as `labelled.jsonl` in this folder and run:
